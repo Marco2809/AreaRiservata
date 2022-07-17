@@ -1,0 +1,81 @@
+body {
+  padding-top: 50px;
+}
+ul{
+        padding: 0;
+        list-style: none;
+    }
+    ul li{
+        display: inline-block;
+        position: relative;
+    }
+    ul li a{
+        display: block;
+        padding: 8px 25px;
+        color: #333;
+        text-decoration: none;
+    }
+    ul li a:hover{
+        color: #fff;
+        background: #669933;
+    }
+    ul li ul.dropdown{
+        width: 200px;
+        background: #333;
+        display: none;
+        position: absolute;
+        left: 0;
+    }
+    ul li:hover ul.dropdown{
+        display: block;
+			background: #669933;
+		/* Display the dropdown */
+    }
+    ul li ul.dropdown li {
+        display: block;
+	
+    }
+	
+	nav navbar-nav{
+		background: #333;     
+	 }
+	 
+	 .titolo-sezione{
+		background-color:#333;
+		margin-top:2%;
+		padding:0.5%;
+		margin-left:2%;
+		margin-right:2%;    
+	 }
+	 
+	 .border{
+		width:96%;
+		margin-top:3%;
+		margin-left:2%;
+		margin-left:2%;
+		border: 3px solid #cfcfcf; 
+		padding-top:2%; 
+		-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        box-shadow: 0 3px 15px rgba(0,0,0,0.3);-moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;    
+	 }
+	 
+	 .border-immagine{
+		max-width:65%;
+		margin-top:3%;
+		margin-left:2%;
+		margin-left:2%;
+		border: 3px solid #cfcfcf; 
+		padding-top:2%; 
+		-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        box-shadow: 0 3px 15px rgba(0,0,0,0.3);-moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;    
+	 }

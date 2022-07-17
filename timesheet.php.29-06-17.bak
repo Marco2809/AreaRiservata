@@ -1,0 +1,1413 @@
+<?php
+session_start();
+require_once('class/dbconn.php');
+require_once('class/user.class.php');
+require_once('class/message.class.php');
+require_once('class/attivita.class.php');
+
+$database = new Database();
+$conn = $database->dbConnection();
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AREA RISERVATA - Timesheet</title>
+
+<script type="text/javascript" src="assets/lib/jquery-1.3.2.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+      <link rel="stylesheet" href="css/style.css">
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="assets/css/zabuto_calendar.css">
+    <link rel="stylesheet" type="text/css" href="assets/js/gritter/css/jquery.gritter.css" />
+    <link rel="stylesheet" type="text/css" href="assets/lineicons/style.css">   
+    <link rel="stylesheet" type="text/css" href="assets/css/calendario.css">   
+    
+    <link rel="stylesheet" type="text/css" href="assets/scss/style.scss">    
+    
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style-responsive.css" rel="stylesheet">
+
+    <script src="assets/js/chart-master/Chart.js"></script>
+    <script language="javascript"> 
+    function toggleMe(obj, a,b){ 
+      var e=document.getElementById(a); 
+      var f=document.getElementById(b);
+      if(obj!="Presente"){ 
+        e.style.display="none"; 
+        if(obj=="Straordinario"||obj=="Permesso"||obj=="Permesso Studi"){
+        f.style.display="";
+    } else {f.style.display="none";}
+      } else{ 
+    e.style.display=""; 
+    f.style.display="none";
+} 
+    } 
+</script>       
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+  </head>
+
+  <body>
+
+  <section id="container" >
+ <?php 
+ include('menu.php');
+ 
+
+if(isset($_POST['aggiungi'])){
+
+if(isset($_REQUEST['data'])){
+
+  $id_mese = substr($_REQUEST['data'],3,2);
+            $id_mese1 = substr($_REQUEST['data'],3,2);
+}
+
+
+
+    if (isset($_REQUEST['id_mese_add'])&&$_REQUEST['id_mese_add']!="") {
+            $id_mese = $_REQUEST['id_mese_add'];
+            $id_mese1 = $_REQUEST['id_mese_add'];
+        } 
+		
+if (isset($_REQUEST['id_anno_add'])&&$_REQUEST['id_anno_add']!="") {
+            $id_anno = $_REQUEST['id_anno_add'];
+        } 
+    
+ //print '<script>alert('.$_REQUEST['id_mese'].')</script>';
+
+    $nu=0;
+    foreach ($_REQUEST['commesse'] as $value) {
+        $nu++;
+        if($nu>1) $timecard .=',';
+        $timecard.= $value."-".$_REQUEST['ore_'.$value];
+    }
+     if($_REQUEST['tipo']!="Presente") $timecard ="";
+    $attivita = new Attivita();
+    $add_attivita = $attivita->setAttivita($_GET['id'], $_REQUEST['data'], $_REQUEST['ore_extra'], $_REQUEST['tipo'], $timecard);
+    
+}
+
+if(isset($_POST['modifica'])){
+
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese1 = $_REQUEST['id_mese'];
+            $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+   // print '<script>alert('.$_REQUEST['id_mese'].')</script>';
+    $nu=0;
+    foreach ($_REQUEST['commesse'] as $value) {
+        $nu++;
+        if($nu>1) $timecard .=',';
+        $timecard.= $value."-".$_REQUEST['ore_'.$value];
+    }
+     if($_REQUEST['tipo']!="Presente") $timecard ="";
+    $attivita = new Attivita();
+    $add_attivita = $attivita->updateAttivita($_REQUEST['attivita_evento'], $_REQUEST['ore_extra_event'], $_REQUEST['tipo'], $timecard);
+    
+    
+    
+}
+
+if(isset($_POST['elimina'])){
+
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese1 = $_REQUEST['id_mese'];
+            $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+    
+    $attivita = new Attivita();
+    $add_attivita = $attivita->delAttivita($_REQUEST['attivita_evento']);
+    //print '<script>alert('.$_REQUEST['attivita_evento'].')</script>';
+}
+
+
+if(isset($_POST['next'])){
+    
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+
+            
+   if($id_mese=="01") $id_mese = 1;
+   if($id_mese=="02") $id_mese = 2;
+   if($id_mese=="03") $id_mese = 3;
+   if($id_mese=="04") $id_mese = 4;
+   if($id_mese=="05") $id_mese = 5;
+   if($id_mese=="06") $id_mese = 6;
+   if($id_mese=="07") $id_mese = 7;
+   if($id_mese=="08") $id_mese = 8;
+   if($id_mese=="09") $id_mese = 9;
+       
+     if($id_mese==12){ $id_anno++;
+     $id_mese = 1;
+     }
+     else $id_mese= $id_mese + 1;;
+     
+   
+ }
+ 
+ if(isset($_POST['prev'])){
+    
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+
+     if($id_mese==1) {$id_mese= 12;
+     $id_anno = $id_anno - 1;
+     }
+     else $id_mese= $id_mese - 1;
+
+ }
+ 
+      
+
+if(!isset($id_mese)) {
+            $id_mese = date("m");
+            $id_mese1 = date("m");
+        } else {  
+            if(!isset($id_mese1)){
+        if($id_mese<=9) $id_mese1 = "0".$id_mese;
+        else $id_mese1 = $id_mese;
+            }
+ } 
+ 
+
+ 
+ if (!isset($id_anno)) {
+            $id_anno = date("Y");
+        }
+    
+        
+        if($id_mese==1) $mese_cal="Gennaio"; 
+	if($id_mese==2) $mese_cal="Febbraio"; 
+	if($id_mese==3) $mese_cal="Marzo"; 
+	if($id_mese==4) $mese_cal="Aprile"; 
+	if($id_mese==5) $mese_cal="Maggio"; 
+	if($id_mese==6) $mese_cal="Giugno"; 
+	if($id_mese==7) $mese_cal="Luglio"; 
+	if($id_mese==8) $mese_cal="Agosto"; 
+	if($id_mese==9) $mese_cal="Settembre"; 
+	if($id_mese==10) $mese_cal="Ottobre"; 
+	if($id_mese==11) $mese_cal="Novembre"; 
+	if($id_mese==12) $mese_cal="Dicembre"; 
+
+        if (!isset($_REQUEST['num_giorni'])) {
+			if(!checkdate($id_mese,28+1,$id_anno)) { $num_giorni = 28;}
+			else if(!checkdate($id_mese,29+1,$id_anno)) { $num_giorni = 29;}
+			else if(!checkdate($id_mese,30+1,$id_anno)) { $num_giorni = 30;}
+			else if(!checkdate($id_mese,31+1,$id_anno)) { $num_giorni = 31;}
+}
+ 
+ ?>
+      
+      <!-- **********************************************************************************************************************************************************
+      CONTENUTO PRINCIPALE
+      *********************************************************************************************************************************************************** -->
+      <!--INIZIO CONTENUTO PRINCIPALE-->
+   <section id="main-content">
+            <section class="wrapper">
+                <?php echo $prova; ?>
+               <!-- CALENDARIO -->		
+               <center>
+                  <div class="calendar-container">
+                     <div class="panel panel-primary">
+                        <div class="calendar-heading">
+                            <form action="" method="post">
+                                <button type="submit" name="prev" style="background: none; border: 0;"><i class="arrowdx fa fa-chevron-left fa-2x" aria-hidden="true"></i></button>
+                           
+                           <span class="mese-title"><?php echo $mese_cal . " " . $id_anno; ?></span>
+                           
+                           <button type="submit" name="next" style="background: none; border: 0;"><i class="arrowdx fa fa-chevron-right fa-2x" aria-hidden="true"></i></button>
+                           
+                           <input type="hidden" name="id_mese" value="<?php echo $id_mese;?>">
+                           <input type="hidden" name="id_anno" value="<?php echo $id_anno;?>">
+                            </form>
+                        </div>
+                     </div>
+                     <table class="table table-responsive table-bordered">
+                        <thead>
+                           <tr class="days-heading">
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>LUN</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>MAR</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>MER</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>GIO</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>VEN</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>SAB</span>
+                                 </center>
+                              </th>
+                              <th style="width:14.28%;">
+                                 <center>
+                                    <span>DOM</span>
+                                 </center>
+                              </th>
+                           </tr>
+                        </thead>
+                        <tbody>
+		<?php
+
+		$inizio = date("l", mktime(0, 0, 0, $id_mese, 1, $id_anno));
+
+                
+		if($inizio=="Monday")
+		{
+			?>
+            <?php
+			
+		for($i=1;$i<=$num_giorni;$i++)
+		{
+                    
+               if($i<=9) $t1="0".$i;
+                                    else $t1=$i;
+                    $timesheet = "SELECT 
+                        id_attivita,
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			$festa="";
+			if($id_mese==1 && $i==1) $festa="Capodanno";
+			if($id_mese==1 && $i==6) $festa="Befana";
+			if($id_mese==4 && $i==25) $festa="Liberazione";
+			if($id_mese==5 && $i==1) $festa="Lavoratori";
+			if($id_mese==6 && $i==2) $festa="Repubblica";
+			if($id_mese==8 && $i==15) $festa="Ferragosto";
+			if($id_mese==11 && $i==1) $festa="Ognissanti";
+			if($id_mese==12 && $i==8) $festa="Immacolata";
+			if($id_mese==12 && $i==25) $festa="Natale";
+			if($id_mese==12 && $i==26) $festa="Stefano";
+		   if($i==1||$i==8||$i==15||$i==22||$i==29)
+		   {
+                       ?>
+      
+      <tr>
+          
+         <?php
+		   }
+		   ?>
+          <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?>>
+                <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    
+                                    
+                                    
+                                    echo $i;?>
+                                    </span>
+                <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($i==7||$i==14||$i==21||$i==28)
+			{
+		?> 
+          
+         	</tr>
+         <?php
+		 	}
+		}
+		}
+		if($inizio=="Tuesday")
+		{
+			?>
+                <tr><td class="no-day"></td>
+            <?php
+		for($i=2;$i<=$num_giorni+1;$i++)
+		{
+                    
+                    $t=$i-1;
+                             if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                    $timesheet = "SELECT  
+                                id_attivita,
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			
+			$festa="";
+			if($id_mese==1 && $i==2) $festa="Capodanno";
+			if($id_mese==1 && $i==7) $festa="Befana";
+			if($id_mese==4 && $i==26) $festa="Liberazione";
+			if($id_mese==5 && $i==2) $festa="Lavoratori";
+			if($id_mese==6 && $i==3) $festa="Repubblica";
+			if($id_mese==8 && $i==16) $festa="Ferragosto";
+			if($id_mese==11 && $i==2) $festa="Ognissanti";
+			if($id_mese==12 && $i==9) $festa="Immacolata";
+			if($id_mese==12 && $i==26) $festa="Natale";
+			if($id_mese==12 && $i==27) $festa="Stefano";
+		   if($t==1||$t==7||$t==14||$t==21||$t==28)
+		   { 
+		?> 
+         
+              <?php if($t!=1){?><tr><?php } ?>
+         <?php
+		   }
+		   ?>
+          <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?>>
+          <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    
+                                    
+                                    echo $t;?>
+                                    </span>
+                <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($t==6||$t==13||$t==20||$t==27)
+			{
+		?> 
+          
+         	</tr>
+         <?php
+		 	}
+		}
+		}
+		if($inizio=="Wednesday")
+		{
+			?>
+                <tr>
+                    <td class="no-days"></td>
+                     <td class="no-days"></td>
+            <?php
+		for($i=3;$i<=$num_giorni+2;$i++)
+		{
+                    $t=$i-2;
+                                if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                    $timesheet = "SELECT  
+                                id_attivita,
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			
+			$festa="";
+			if($id_mese==1 && $i==3) $festa="Capodanno";
+			if($id_mese==1 && $i==8) $festa="Befana";
+			if($id_mese==4 && $i==27) $festa="Liberazione";
+			if($id_mese==5 && $i==3) $festa="Lavoratori";
+			if($id_mese==6 && $i==4) $festa="Repubblica";
+			if($id_mese==8 && $i==17) $festa="Ferragosto";
+			if($id_mese==11 && $i==3) $festa="Ognissanti";
+			if($id_mese==12 && $i==10) $festa="Immacolata";
+			if($id_mese==12 && $i==27) $festa="Natale";
+			if($id_mese==12 && $i==28) $festa="Stefano";
+		   if($t==1||$t==6||$t==13||$t==20||$t==27)
+		   {
+		?> 
+         
+              <?php if($t!=1){?><tr>
+                  <?php } ?>
+         <?php
+		   }
+		   ?>
+               <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?>>
+          <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    
+                                    
+                                    echo $t;?>
+                                    </span>
+                <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($t==5||$t==12||$t==19||$t==26)
+			{
+		?> 
+          
+         	</tr>
+         <?php
+		 	}
+		}
+	}
+	if($inizio=="Thursday")
+		{
+			?>
+                        <tr>
+                       <td class="no-day"></td>
+           <td class="no-day"></td>
+            <td class="no-day"></td>
+            
+            <?php
+		for($i=4;$i<=$num_giorni+3;$i++)
+		{            
+                    $t=$i-3;
+                    if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                    $timesheet = "SELECT  
+                            id_attivita,
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			$festa="";
+			if($id_mese==1 && $i==4) $festa="Capodanno";
+			if($id_mese==1 && $i==9) $festa="Befana";
+			if($id_mese==4 && $i==28) $festa="Liberazione";
+			if($id_mese==5 && $i==4) $festa="Lavoratori";
+			if($id_mese==6 && $i==5) $festa="Repubblica";
+			if($id_mese==8 && $i==18) $festa="Ferragosto";
+			if($id_mese==11 && $i==4) $festa="Ognissanti";
+			if($id_mese==12 && $i==11) $festa="Immacolata";
+			if($id_mese==12 && $i==28) $festa="Natale";
+			if($id_mese==12 && $i==29) $festa="Stefano";
+		   if($t==1||$t==5||$t==12||$t==19||$t==31)
+		   {
+		?> 
+                        
+              <?php if($t!=1){?>
+            <tr>
+                  <?php } ?>
+         <?php
+		   }
+		   ?>
+               <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?> >
+             <center>
+                                    <span class="span-day events">
+                                    <?php 
+                                    
+                                    
+                                    echo $t;?>
+                                    </span>
+               <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($t==4||$t==11||$t==18||$t==25)
+			{
+		?> 
+         	</tr>
+         <?php
+		 	}
+		}
+	}
+	if($inizio=="Friday")
+		{
+			?>
+ <tr><td class="no-day"></td>
+     <td class="no-day"></td>
+     <td class="no-day"></td>
+     <td class="no-day"></td>
+            <?php
+		for($i=5;$i<=$num_giorni+4;$i++)
+		{
+                    
+                    $t=$i-4;
+                     if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                    $timesheet = "SELECT 
+                                id_attivita,            
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			$festa="";
+			if($id_mese==1 && $i==5) {$festa="Capodanno";}
+			if($id_mese==1 && $i==10){ $festa="Befana";}
+			if($id_mese==4 && $i==29) $festa="Liberazione";
+			if($id_mese==5 && $i==5) $festa="Lavoratori";
+			if($id_mese==6 && $i==6) $festa="Repubblica";
+			if($id_mese==8 && $i==19) $festa="Ferragosto";
+			if($id_mese==11 && $i==5) $festa="Ognissanti";
+			if($id_mese==12 && $i==12) $festa="Immacolata";
+			if($id_mese==12 && $i==29) $festa="Natale";
+			if($id_mese==12 && $i==30) $festa="Stefano";
+		   if($t==1||$t==4||$t==11||$t==18||$t==25)
+		   {
+		?> 
+         
+              <?php if($t!=1){?><tr>
+                  <?php } ?>
+         <?php
+		   }
+                   
+		   ?>
+               <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?> >
+          
+                    <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    
+                                    echo $t;?>
+                                    </span>
+                <?php echo $button;?>
+                
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+                   
+		<?php
+			if($t==3||$t==10||$t==17||$t==24)
+			{
+		?> 
+         </tr>
+         <?php
+		 	}
+		}
+	}
+	if($inizio=="Saturday")
+		{
+			?>
+            <tr>
+                       <td class="no-day"></td>
+           <td class="no-day"></td>
+            <td class="no-day"></td>
+            <td class="no-day"></td>
+            <td class="no-day"></td>
+            <?php
+		for($i=6;$i<=$num_giorni+5;$i++)
+		{
+                    
+                                 $t=$i-5;
+                     if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                                   //print $t1.'/'.$id_mese1.'/'.$id_anno;
+                                    
+                    $timesheet = "SELECT 
+                                id_attivita,
+				                          ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+   $result_timesheet = $conn->query($timesheet);
+   $button = "";
+	$somma=0;
+        $stato="";
+	if ($result_timesheet->num_rows > 0) {
+	$control=0;
+        
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			$festa="";
+			if($id_mese==1 && $i==6) {$festa="Capodanno";}
+			if($id_mese==1 && $i==11){ $festa="Befana";}
+			if($id_mese==4 && $i==30) $festa="Liberazione";
+			if($id_mese==5 && $i==6) $festa="Lavoratori";
+			if($id_mese==6 && $i==7) $festa="Repubblica";
+			if($id_mese==8 && $i==20) $festa="Ferragosto";
+			if($id_mese==11 && $i==6) $festa="Ognissanti";
+			if($id_mese==12 && $i==13) $festa="Immacolata";
+			if($id_mese==12 && $i==30) $festa="Natale";
+			if($id_mese==12 && $i==31) $festa="Stefano";
+		   if($t==1||$t==3||$t==10||$t==17||$t==24)
+		   {
+		?> 
+              <?php if($t!=1){?>
+            <tr>
+                  <?php } ?>
+         <?php
+		   }
+                   
+		   ?>
+               <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?>>
+          <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    
+                                    
+                                    echo $t;?>
+                                    </span>
+                <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($t==2||$t==9||$t==16||$t==23||$t==30)
+			{
+		?> 
+         </tr>
+		
+         <?php
+		 	}
+		}
+	}
+	if($inizio=="Sunday")
+		{
+			?>
+         <tr><td class="no-day"></td>
+             <td class="no-day"></td>
+             <td class="no-day"></td>
+             <td class="no-day"></td>
+             <td class="no-day"></td>
+             <td class="no-day"></td>
+            <?php
+		for($i=7;$i<=$num_giorni+6;$i++)
+		{
+                                 $t=$i-6;
+                    if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                    $timesheet = "SELECT 
+                                id_attivita,
+				ore,
+                                stato,
+                                tipo,
+                                timecard,
+                                data
+                                                        
+                                FROM attivita 
+                                    
+                                                   WHERE id_utente='" . $_GET['id']."'"
+                                                            . "AND data = '". $t1.'/'.$id_mese1.'/'.$id_anno."'";
+
+                   
+
+    $result_timesheet = mysql_query($timesheet, $conn->db);
+	$somma=0;
+        $stato="";
+	if (mysql_num_rows($result_timesheet) > 0) {
+		$control=0;
+while ($row = $result_timesheet->fetch_object()) {
+    if($row->tipo=="Presente"){ $color = "success"; $type="P";}
+    if($row->tipo=="Permesso"){ $color = "info"; $type="Pr";}
+    if($row->tipo=="Ferie"){ $color = "grigio"; $type="F";}
+    if($row->tipo=="Malattia"){ $color = "danger"; $type="M";}
+    if($row->tipo=="Maternità"){ $color = "warning"; $type="Ma";}
+    if($row->tipo=="Straordinario"){ $color = "primary"; $type="S";}
+    if($row->tipo=="Permesso Studi"){ $color = "arancio"; $type="Ps";}
+    if($row->tipo=="Congedo Parentale"){ $color = "verdescuro"; $type="Cp";}
+    
+    $button .=  '<br>
+                <button type="button" data-ore="'.$row->ore.'" data-timecard="'.$row->timecard.'" data-data="'.$t1.'/'.$id_mese1.'/'.$id_anno.'" data-idattivita="'.$row->id_attivita.'" data-stato="'.$row->stato.'" data-motivo="'.$row->motivo.'" data-tipo="'.$row->tipo.'" style="width:30px; margin-top:1%;" class="btn btn-'.$color.' btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">'.$type.'</button>';
+ //if($row['stato']=="Non Validato") { $stato = "Non Validato"; $control = 1;}
+ //if($row['stato']=="Rifiutato"&&$control!=1) {$stato = "<span style='color:red;'>Rifiutato</span>"; $control = 1;}
+ //if($row['stato']=="Validato"&&$control!=1&&$control!=2) {$stato = "<span style='color:green;'>Validato</span>";}
+ //if($row['tipo']=="P" ) $somma=$somma + $row['ore_lavorate'];
+    
+    
+}
+  
+        }
+			$festa="";
+			if($id_mese==1 && $i==7) {$festa="Capodanno";}
+			if($id_mese==1 && $i==12){ $festa="Befana";}
+			if($id_mese==4 && $i==31) $festa="Liberazione";
+			if($id_mese==5 && $i==7) $festa="Lavoratori";
+			if($id_mese==6 && $i==8) $festa="Repubblica";
+			if($id_mese==8 && $i==21) $festa="Ferragosto";
+			if($id_mese==11 && $i==7) $festa="Ognissanti";
+			if($id_mese==12 && $i==14) $festa="Immacolata";
+			if($id_mese==12 && $i==31) $festa="Natale";
+			if($id_mese==12 && $i==32) $festa="Stefano";
+		   if($t==1||$t==2||$t==9||$t==16||$t==23||$t==30)
+		   {
+		?> 
+         
+              <?php if($t!=1){?>
+             <tr>
+                  <?php } ?>
+         <?php
+		   }
+                   
+		   ?>
+               <td <?php if($festa==""){?> class="cells" <?php } ?>
+        <?php if($festa!="") { ?> class="festivo" <?php } ?>>
+               <center>
+                                    <span class="span-day events">
+                                     <?php 
+                                    if($t<=9) $t1="0".$t;
+                                    else $t1=$t;
+                                    if($id_mese<=9) $id_mese1 = "0".$id_mese;
+                                    else $id_mese1 = $id_mese;
+                                    echo $t;?>
+                                    </span>
+                <?php echo $button;?>
+                 <button style="border:none; background-color: transparent;" type="button" <?php if($festa=="") {?> class="fa fa-plus-circle fa-2x aggiungi"<?php } else { ?> class="fa fa-plus-circle fa-2x aggiungi-festivo" <?php }?> data-toggle="modal" data-target="#exampleModal" 
+                data-calendar-date="<?php echo $t1.'/'.$id_mese1.'/'.$id_anno;?>" data-user-id="<?php echo $_GET['id'];?>" data-supplier-name="Prova">
+          
+</button>
+             </center>
+          </td>
+		<?php
+			if($t==1||$t==8||$t==15||$t==22||$t==29)
+			{
+		?> 
+         </tr>
+         <?php
+		 	}
+		}
+	
+     
+}
+
+	?>
+  </tbody>
+</table>
+</form>
+      
+    
+                     <!-- LEGENDA -->
+                     <div class="panel panel-primary">
+                        <div class="legenda-heading">
+                           <span class="legenda-title">Legenda</span>
+                        </div>
+                        <div class="panel-body">
+                           <table style="border:0;width:100%;">
+                              <tr style="border:0;">
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-success legenda">P</span>
+                                       <span class="legenda">Presente</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-info legenda">Pr</span>
+                                       <span class="legenda">Permesso</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-grigio legenda">F</span>
+                                       <span class="legenda">Ferie</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-danger legenda">M</span>
+                                       <span class="legenda">Malattia</span>
+                                    </p>
+                                 </th>
+                              </tr>
+                              <tr style="border:0;">
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-warning legenda">Ma</span>
+                                       <span class="legenda">Maternità</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-primary legenda">S</span>
+                                       <span class="legenda">Straordinario</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-arancio legenda">Ps</span>
+                                       <span class="legenda">Permesso Studio</span>
+                                    </p>
+                                 </th>
+                                 <th>
+                                    <p>
+                                       <span class="btn btn-verdescuro legenda">Cp</span>
+                                       <span class="legenda">Congedo Parentale</span>
+                                    </p>
+                                 </th>
+                              </tr>
+                           </table>
+                        </div>
+                     </div>
+                     <!-- FINE LEGENDA -->
+                     <!-- FINE LEGENDA -->
+
+                     
+                     
+                    <!-- CODICE MODAL NUOVA ATTIVITA' -->
+                     <form action="" method="post">
+<div class="modal fade" id="ModalEvents" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                 <h4 class="modal-title">DETTAGLIO EVENTO</h4>
+                              </div>
+                         <div class="modal-body text-center">
+                             <div class="row">
+               
+                  <div class="col-md-6">
+                     <div class="panel panel-primary panel-height">
+                        <div class="calendar-heading">
+                           <span class="span-title">PRESENZA</span>
+                        </div>
+                        <div class="panel-body">
+                           <div class="form-group">
+                              <p class="span-form">Seleziona Tipo:</p>
+                              <select class="form-control" id="tipo_event" name="tipo" style="width: 100%;" onchange="toggleMe(this.options[this.selectedIndex].value, 'timecard_event','ore_extra_event');">
+                                
+                                  <option value="Presente">Presente</option>
+                                 <option value="Straordinario">Straordinario</option>
+                                 <option value="Permesso">Permesso</option>
+                                 <option value="Ferie">Ferie</option>
+                                 <option value="Maternità">Maternità</option>
+                                 <option value="Malattia">Malattia</option>
+                                 <option value="Congedo Parentale">Congedo Parentale</option>
+                                 <option value="Permesso Studi">Permesso Studi</option>
+                              </select>
+                           </div>
+                           <div class="form-group">
+                              <p class="span-form">Data:</p>
+                              <input type="text" id="data_modal" name="data" class="form-control" value="">
+                           </div>
+                            <div class="form-group" style="display:none;" id="ore_extra_event">
+                              <p class="span-form">Ore:</p>
+                              <select id="select_ore_event" name="ore_extra_event" class="form-control">
+                                            <?php for($i=1;$i<=8;$i++){
+                                                ?>
+                                            <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="panel panel-primary panel-height" id="timecard_event">
+                        <div class="calendar-heading">
+                           <span class="span-title">TIMECARD</span>
+                        </div>
+                        <div class="panel-body">
+                           <div class="form-group">
+                              <fieldset style="text-align:left;">
+                                 <p class="span-form">Seleziona Commessa:</p>
+                                 <br>
+                                 <?php $sql="SELECT * FROM user_commesse as uc, commesse as c WHERE uc.id_commessa = c.id_commessa AND id_user=".$_GET['id']; 
+                                 $result = $conn->query($sql);
+                                       $com=0;
+                                        while($obj_comm= $result->fetch_object()){ $com++;?>
+                                 
+                                 <div class="row">
+                                    <div class="col-md-7">
+                                        <input <?php if($com==1){ ?> checked="checked" <?php } ?> type="checkbox" id="commessa_<?php echo $obj_comm->id_commessa;?>" name="commesse[]" value="<?php print $obj_comm->id_commessa;?>"/>
+                                       <span style="font-size:bold;"><?php echo $obj_comm->nome_commessa;?></span>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <select name="ore_<?php print $obj_comm->id_commessa;?>" id="value_commessa_<?php echo $obj_comm->id_commessa;?>" class="form-control">
+                                            <?php for($i=1;$i<=8;$i++){
+                                                ?>
+                                            <option <?php if($i==8){?> selected="selected" <?php } ?> value="<?php echo $i;?>"><?php echo $i;?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+                                       
+                                    </div>
+                                 </div>
+                                 <?php } ?>
+                              </fieldset>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               
+            </div>
+                                 <p>
+                                     <button type="submit" name="modifica" class="btn btn-info">Modifica</button>
+                                     <button type="submit" name="elimina" class="btn btn-danger">Elimina</button>
+                                     <input type="hidden" name="attivita_evento" value="" id="attivita_evento">
+                                     <input type="hidden" name="id_mese" value="" id="id_mese_modal_event" >
+                                     <input type="hidden" name="id_anno" value="" id="id_anno_modal_event">
+                                 </p>
+                              </div>
+                              <div class="modal-footer">
+                                 <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </form>	
+                   
+                    
+                    <!-- MODAL FORM ATTIVITA' -->
+                     <form action="" method="post">
+                     <div class="modal fade" id="exampleModal" role="dialog">
+   <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">NUOVA ATTIVITA'</h4>
+         </div>
+         <div class="modal-body text-center">
+            <div class="row">
+               
+                  <div class="col-md-6">
+                     <div class="panel panel-primary panel-height">
+                        <div class="calendar-heading">
+                           <span class="span-title">PRESENZA</span>
+                        </div>
+                        <div class="panel-body">
+                           <div class="form-group">
+                              <p class="span-form">Seleziona Tipo:</p>
+                              <select class="form-control" id="tipo" name="tipo" style="width: 100%;" onchange="toggleMe(this.options[this.selectedIndex].value, 'timecard','ore_extra');">
+                                
+                                  <option value="Presente">Presente</option>
+                                 <option value="Straordinario">Straordinario</option>
+                                 <option value="Permesso">Permesso</option>
+                                 <option value="Ferie">Ferie</option>
+                                 <option value="Maternità">Maternità</option>
+                                 <option value="Malattia">Malattia</option>
+                                 <option value="Congedo Parentale">Congedo Parentale</option>
+                                 <option value="Permesso Studi">Permesso Studi</option>
+                              </select>
+                           </div>
+                           <div class="form-group">
+                              <p class="span-form">Data:</p>
+                              <input type="text" id="data_modal" name="data" class="form-control" value="">
+                           </div>
+                            <div class="form-group" style="display:none;" id="ore_extra">
+                              <p class="span-form">Ore:</p>
+                              <select name="ore_extra" class="form-control">
+                                            <?php for($i=1;$i<=8;$i++){
+                                                ?>
+                                            <option <?php if($i==8){?> selected="selected" <?php } ?> value="<?php echo $i;?>"><?php echo $i;?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="panel panel-primary panel-height" id="timecard">
+                        <div class="calendar-heading">
+                           <span class="span-title">TIMECARD</span>
+                        </div>
+                        <div class="panel-body">
+                           <div class="form-group">
+                              <fieldset style="text-align:left;">
+                                 <p class="span-form">Seleziona Commessa:</p>
+                                 <br>
+                                 <?php $sql="SELECT * FROM user_commesse as uc, commesse as c WHERE uc.id_commessa = c.id_commessa AND id_user=".$_GET['id']; 
+                                 $result = $conn->query($sql);
+                                       $com=0;
+                                        while($obj_comm= $result->fetch_object()){ $com++;?>
+                                 
+                                 <div class="row">
+                                    <div class="col-md-7">
+                                       <input <?php if($com==1){ ?> checked="checked" <?php } ?> type="checkbox"  name="commesse[]" value="<?php print $obj_comm->id_commessa;?>"/>
+                                       <span style="font-size:bold;"><?php echo $obj_comm->nome_commessa;?></span>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <select name="ore_<?php print $obj_comm->id_commessa;?>" class="form-control">
+                                            <?php for($i=1;$i<=8;$i++){
+                                                ?>
+                                            <option <?php if($i==8){?> selected="selected" <?php } ?> value="<?php echo $i;?>"><?php echo $i;?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+                                        <input type="hidden" name="id_user" value="" id="id_user">
+                                        <input type="hidden" name="id_mese_add" value="" id="id_mese_modal" >
+                                        <input type="hidden" name="id_anno_add" value="" id="id_anno_modal">
+                                    </div>
+                                 </div>
+                                 <?php } ?>
+                              </fieldset>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               
+            </div>
+      <div class="modal-footer">
+             <center>
+                 <button type="submit" class="btn btn-success" name="aggiungi" >Aggiungi</button>
+          </center>
+         </div>
+             
+         </div>
+      </div>
+   </div>
+</div>
+</form>
+<!-- FINE FORM ATTIVITA' --->
+
+      <!--FINE CONTENUTO PRINCIPALE-->
+      <!--INIZIO FOOTER-->
+      <footer class="site-footer">
+          <div class="text-center">
+              Powered by Servicetech S.r.l.
+              <a href="#" class="go-top">
+                  <i class="fa fa-angle-up"></i>
+              </a>
+          </div>
+      </footer>
+      <!--FINE FOOTER-->
+  </section>
+
+    <!-- js-->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/jquery-1.8.3.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+    <script src="assets/js/jquery.scrollTo.min.js"></script>
+    <script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="assets/js/jquery.sparkline.js"></script>
+
+
+    <!--script-->
+    <script src="assets/js/common-scripts.js"></script>
+    
+    <script type="text/javascript" src="assets/js/gritter/js/jquery.gritter.js"></script>
+    <script type="text/javascript" src="assets/js/gritter-conf.js"></script>
+
+    
+	
+    <script src="assets/js/sparkline-chart.js"></script>    
+	<script src="assets/js/zabuto_calendar.js"></script>	
+        <script type="text/javascript">
+            $(document).ready(function () {
+    $('#exampleModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Il bottone che ha fatto il trigger dell'evento show.bs.modal
+      var documentId = button.data('user-id'); // Estrae info da attributo HTML data-document-id
+      var documentData1 = button.data('calendar-date'); // Estrae info da attributo HTML data-document-name
+      var documentNote = button.data('supplier-name'); // Estrae info da attributo HTML data-document-note
+      var datamodal1 = documentData1.split("/");
+      
+      var title = 'NUOVA ATTIVITA - ' + documentData1;
+
+      // Update the modal's content.
+      var modal = $(this);
+      modal.find('.modal-title').text(title);
+      modal.find('#note').text(documentNote);
+      modal.find('#data_modal').val(documentData1);
+        modal.find('#id_mese_modal').val(datamodal1[1]);
+        modal.find('#id_anno_modal').val(datamodal1[2]);
+ 
+      // Volendo ad esempio passare l'ID del documento tramite il bottone di conferma del modal lo assegno al valore del bottone
+      modal.find('button.btn-success').val(documentId);
+    });
+});
+
+  $(document).ready(function () {
+    $('#ModalEvents').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Il bottone che ha fatto il trigger dell'evento show.bs.modal
+      var documentId = button.data('idattivita'); // Estrae info da attributo HTML data-document-id
+      var documentData = button.data('data'); // Estrae info da attributo HTML data-document-name
+      var documentNote = button.data('supplier-name'); // Estrae info da attributo HTML data-document-note
+      var tipo = button.data('tipo');
+      var ore_extra = button.data('ore');
+      var timecard = button.data('timecard');
+      var title = 'DETTAGLIO ATTIVITA';
+      var sep = timecard.split(',');
+      var datamodal = documentData.split("/");
+      // Update the modal's content.
+      var modal = $(this);
+      modal.find('.modal-title').text(title);
+       modal.find('#data_modal').val(documentData);
+         modal.find('#tipo_event').val(tipo);
+         modal.find('#attivita_evento').val(documentId);
+         modal.find('#select_ore_event').val(ore_extra);
+         modal.find('#id_mese_modal_event').val(datamodal[1]);
+         modal.find('#id_anno_modal_event').val(datamodal[2]);
+        
+
+
+     if(tipo!="Presente"){  
+         
+            document.getElementById("timecard_event").style.display = 'none';
+            
+     } else document.getElementById("timecard_event").style.display = '';
+     
+     if(tipo=="Permesso"||tipo=="Straordinari"||tipo=="Permesso Studi"){  
+         
+            document.getElementById("ore_extra_event").style.display = '';
+            
+     } else document.getElementById("ore_extra_event").style.display = 'none';
+     
+         if(timecard!=""){
+         for(i=0;i<sep.length; i++){
+          var com = sep[i].split("-");
+         
+          modal.find("#value_commessa_"+com[0]).val(com[1]);
+          modal.find("#commessa_"+com[0]).attr('checked',true);
+    }
+    }
+         
+
+      // Volendo ad esempio passare l'ID del documento tramite il bottone di conferma del modal lo assegno al valore del bottone
+      modal.find('button.btn-success').val(documentId);
+    });
+});
+            </script>
+  </body>
+</html>

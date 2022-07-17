@@ -1,0 +1,181 @@
+<!--CONTENUTO PRINCIPALE-->
+<section class="">
+<div class="row">
+<div class="col-md-12">
+<div class="panel panel-info filterable" style="margin-bottom:5%;padding-bottom:2%;">
+  <div class="calendar-heading" style="min-height:40px;margin-bottom:2%;">
+              </div>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Area di competenza:</strong>
+              </div>
+              <div class="col-md-4">
+              <select name="area" id="area" style="height:30px;width:65%;" class="form-control">
+                  <option value="Sys Admin">Sys Admin</option>
+                  <option value="Tecnico Hardware">Tecnico Hardware</option>
+                  <option value="Phisical Network Developer">Phisical Network Developer</option>
+                  <option value="Network Admin">Network Admin</option>
+                  <option value="Consulente Direzionale">Consulente Direzionale</option>
+                  <option value="Developer - IT Solutions">Developer - IT Solutions</option>
+                  <option value="Web Design - Grafica 3D">Web Design - Grafica 3D</option>
+                  <option value="Altro">Altro</option>
+              </select>
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#area_comp').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+
+
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Ruolo:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#ruolo').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Mansione:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#mansione').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Nome Istituto:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#istituto').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Corso di laurea:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#laurea').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Corso di studi:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#studi').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Tipologia:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#tipologia').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Livello:</strong>
+              </div>
+              <div class="col-md-4">
+              <select name="livello" id="livello" style="height:30px;width:65%;" class="form-control">
+          <option value="Principiante"> Principiante </option>
+          <option value="Intermedio"> Intermedio </option>
+          <option value="Avanzato"> Avanzato </option>
+  </select>
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#livello_comp').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Titolo:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#titolo').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Ente:</strong>
+              </div>
+              <div class="col-md-4">
+              <input style="width:65%;" class="form-control" type="text" name="" value="">
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#ente').toggle();"></button>
+              </div>
+              </div>
+              <hr>
+
+              <div class="row" style="padding-left:15%;">
+              <div class="col-md-4">
+              <strong>Tipologia:</strong>
+              </div>
+              <div class="col-md-4">
+              <select name="tipo_cor" id="tipo_cor" style="height:30px;width:65%;" class="form-control">
+          <option value="Corso Base"> Corso Base </option>
+          <option value="Primo Soccorso"> Primo Soccorso </option>
+          <option value="Anti Incendio"> Anti Incendio </option>
+          <option value="Capocantiere"> Capocantiere </option>
+          <option value="RLS"> RLS </option>
+          <option value="RSSP"> RSSP </option>
+  </select>
+              </div>
+              <div class="col-md-4">
+              <button class="fa fa-plus-circle fa-2x button-clear" onclick="$('#tipo_corso').toggle();"></button>
+              </div>
+              </div>
+
+
+
+</div>
+</div>
+
+</div>
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->

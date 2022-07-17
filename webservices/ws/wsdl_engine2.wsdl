@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+     xmlns:tns="http://service-tech.org/servicetech/area_riservata/webservices/ws/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"  
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" 
+     targetNamespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/">
+	<types>
+		<xs:schema targetNamespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/">
+
+				<xs:element name="nome" type="xs:string"/>
+			<xs:element name="asset" type="xs:string"/>
+
+			<xs:element name="ricerca" type="xs:string"/>
+			<xs:element name="ricercarisposta" type="xs:string"/>
+
+			<xs:element name="assetconv" type="xs:string"/>
+			<xs:element name="assetconvrisposta" type="xs:string"/>
+
+			<xs:element name="assetcens" type="xs:string"/>
+			<xs:element name="assetcensrisposta" type="xs:string"/>
+
+			<xs:element name="labels" type="xs:string"/>
+			<xs:element name="labelsrisposta" type="xs:string"/>
+
+			<xs:element name="addasset" type="xs:string"/>
+			<xs:element name="addassetrisposta" type="xs:string"/>
+
+			<xs:element name="setstorico" type="xs:string"/>
+			<xs:element name="setstoricorisposta" type="xs:string"/>
+                        
+                        
+                        <xs:element name="datidip" type="xs:string"/>
+			<xs:element name="setdatirisposta" type="xs:string"/>
+                        
+
+			<xs:element name="updateasset" type="xs:string"/>
+			<xs:element name="updateassetrisposta" type="xs:string"/>
+
+			<xs:element name="movetoutilizzati" type="xs:string"/>
+			<xs:element name="movetoutilizzatirisposta" type="xs:string"/>
+
+			<xs:element name="getHRdipendente" type="xs:string"/>
+			<xs:element name="getHRdipendenterisposta" type="xs:string"/>
+
+			<xs:element name="prova" type="xs:string"/>
+			<xs:element name="provarisposta" type="xs:string"/>
+
+		</xs:schema>
+	</types>
+        
+        <message name="prendiAsset">
+		<part name="nome" type="xs:string"/>
+	</message>
+	<message name="prendiAssetRisposta">
+		<part name="asset" type="xs:string"/>
+	</message>
+
+<message name="provaAsset">
+		<part name="prova" type="xs:string"/>
+	</message>
+	<message name="provaAssetRisposta">
+		<part name="provarisposta" type="xs:string"/>
+	</message>
+
+<message name="getLabels">
+		<part name="labels" type="xs:string"/>
+	</message>
+	<message name="labelsRisposta">
+		<part name="labelsrisposta" type="xs:string"/>
+	</message>
+
+	 <message name="doSearch">
+		<part name="ricerca" type="xs:string"/>
+	</message>
+	<message name="doSearchRisposta">
+		<part name="ricercarisposta" type="xs:string"/>
+	</message>
+
+	 <message name="getAssetConv">
+		<part name="assetconv" type="xs:string"/>
+	</message>
+	<message name="getAssetConvRisposta">
+		<part name="assetconvrisposta" type="xs:string"/>
+	</message>
+
+	 <message name="censisciAsset">
+		<part name="assetcens" type="xs:string"/>
+	</message>
+	<message name="censisciAssetRisposta">
+		<part name="assetcensrisposta" type="xs:string"/>
+	</message>
+
+	 <message name="aggiungiAsset">
+		<part name="addasset" type="xs:string"/>
+	</message>
+	<message name="aggiungiAssetRisposta">
+		<part name="addassetrisposta" type="xs:string"/>
+	</message>
+
+ <message name="aggiornaAsset">
+		<part name="updateasset" type="xs:string"/>
+	</message>
+	<message name="aggiornaAssetRisposta">
+		<part name="updateassetrisposta" type="xs:string"/>
+	</message>
+
+	 <message name="getHRdipendente">
+		<part name="getHRdipendente" type="xs:string"/>
+	</message>
+	<message name="getHRdipendenteRisposta">
+		<part name="getHRdipendenterisposta" type="xs:string"/>
+	</message>
+
+	 <message name="modifica_anagrafica">
+		<part name="setstorico" type="xs:string"/>
+	</message>
+        
+        <message name="getDatiHR">
+		<part name="datidip" type="xs:string"/>
+	</message>
+        
+	<message name="setStoricoRisposta">
+		<part name="setstoricorisposta" type="xs:string"/>
+	</message>
+        
+        <message name="setDatiRisposta">
+		<part name="setdatiRisposta" type="xs:string"/>
+	</message>
+
+
+
+	 <message name="moveToUtilizzati">
+		<part name="movetoutilizzati" type="xs:string"/>
+	</message>
+	<message name="moveToUtilizzatiRisposta">
+		<part name="movetoutilizzatirisposta" type="xs:string"/>
+	</message>
+
+	<portType name="WebServiceTest">
+
+                <operation name="getAllFromAnagrafica">
+			<input message="tns:prendiAsset"/>
+			<output message="tns:prendiAssetRisposta"/>
+		</operation>
+
+   <operation name="provaAsset">
+			<input message="tns:provaAsset"/>
+			<output message="tns:provaAssetRisposta"/>
+		</operation>
+
+		   <operation name="searchP_F_A">
+			<input message="tns:getLabels"/>
+			<output message="tns:labelsRisposta"/>
+		</operation>
+
+		<operation name="getAssetConv">
+			<input message="tns:getAssetConv"/>
+			<output message="tns:getAssetConvRisposta"/>
+		</operation>
+
+		  <operation name="searchByMag">
+			<input message="tns:doSearch"/>
+			<output message="tns:doSearchRisposta"/>
+		</operation>
+
+	  <operation name="getHRdipendente">
+			<input message="getHRdipendente"/>
+			<output message="tns:getHRdipendenteRisposta"/>
+		</operation>
+
+		<operation name="censisciAsset">
+			<input message="tns:censisciAsset"/>
+			<output message="tns:censisciAssetRisposta"/>
+		</operation>
+
+		<operation name="certificazioni">
+			<input message="tns:aggiungiAsset"/>
+			<output message="tns:aggiungiAssetRisposta"/>
+		</operation>
+
+		<operation name="updateAsset">
+			<input message="tns:aggiornaAsset"/>
+			<output message="tns:aggiornaAssetRisposta"/>
+		</operation>
+
+		<operation name="modifica_anagrafica">
+			<input message="tns:modifica_anagrafica"/>
+			<output message="tns:setStoricoRisposta"/>
+		</operation>
+                
+                <operation name="getDatiHR">
+			<input message="tns:getDatiHR"/>
+			<output message="tns:setDatiRisposta"/>
+		</operation>
+
+		<operation name="moveToUtilizzati">
+			<input message="tns:moveToUtilizzati"/>
+			<output message="tns:moveToUtilizzatiRisposta"/>
+		</operation>
+
+	</portType>
+        
+	<binding name="WebServiceSOAPBinding" type="tns:WebServiceTest">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" type="rpc"/>
+
+		<operation name="getAllFromAnagrafica">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/getAllFromAnagrafica"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+<operation name="provaAsset">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/provaAsset"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+	<operation name="getHRdipendente">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/getHRdipendente"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+			<operation name="moveToUtilizzati">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/moveToUtilizzati"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+<operation name="updateAsset">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/updateAsset"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+<operation name="searchP_F_A">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/searchP_F_A"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+			<operation name="censisciAsset">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/censisciAsset"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+        
+
+			<operation name="searchByMag">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/searchByMag"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+		<operation name="getAssetConv">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/getAssetConv"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+				<operation name="certificazioni">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/certificazioni"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+				<operation name="modifica_anagrafica">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/modifica_anagrafica"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+                
+                
+                
+                
+                <operation name="getDatiHR">
+                        <!-- Localizzazione del service deployato sul server. -->
+			<soap:operation 
+                             soapAction="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php/getDatiHR"/>
+			<input>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" 
+                                     encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
+                                     namespace="http://service-tech.org/servicetech/area_riservata/webservices/ws/"/>
+			</output>
+		</operation>
+
+	</binding>
+	
+	<service name="GetAsset">
+		<port name="GetAssets" binding="tns:WebServiceSOAPBinding">
+			<soap:address location="http://service-tech.org/servicetech/area_riservata/webservices/ws/server_ws.php"/>
+		</port>
+	</service>
+        </definitions>

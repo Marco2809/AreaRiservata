@@ -1,0 +1,122 @@
+<?php
+
+session_start();
+//ciao
+include('dbconn.php');
+//include('Mail.php'); 
+//include('Mail/mime.php');
+$conn = new dbconnect();
+$r = $conn->connect();
+if(isset($_SESSION['user_idd']))
+{
+$cod_user = $_SESSION['user_idd'];
+$cod_anagr = $_SESSION['user_idd'];
+}
+
+$alert="";
+
+
+
+if (!isset($_SESSION['username']))
+    header("location: login.htm.php");
+    
+if (isset($_REQUEST['action'])) {
+    $action = $_REQUEST['action'];
+    
+} else {
+    $action = '';
+}
+
+?>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amministrazione</title>
+<link href="boilerplate.css" rel="stylesheet" type="text/css">
+<link href="css/css.css" rel="stylesheet" type="text/css">
+<link href="css/styles.css" rel="stylesheet" type="text/css">
+<script src="respond.min.js"></script>
+    <script type="text/javascript">
+function comparsa_messaggio() {if (document.getElementById("messaggio").style.display=="none"){ document.getElementById("messaggio").style.display=""; } else {document.getElementById("messaggio").style.display="none";} }
+</script>   
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+<script type='text/javascript'>
+
+function modificaLink(parametro, valore){
+
+    var link = window.location.href;
+    if(link.indexOf("?")!=-1){
+
+        link = link + "&"+parametro+"="+valore+"";
+
+    }else{
+
+        link = link + "?"+parametro+"="+valore+"";
+
+    }
+    
+    window.location.href=link;
+}
+</script>
+<script type="text/javascript">
+    function removeItem(key) {
+   
+    var rtn = window.location.href;
+        rtn = rtn.replace(key,"");
+    window.location.href=rtn;
+}
+
+    </script>
+
+<script type="text/javascript">
+function newhref(gruppo){
+    window.location.href = 'amministrazione.php?id_gruppo=adm&gruppo='+gruppo;
+}
+</script>
+</head>
+        
+<body>
+<div class="gridContainer clearfix">
+ <div id="div1" class="fluid">
+<div class="container">
+
+<?php include('menu_top.php');
+$gruppi_admin=explode(",",$_SESSION['gruppo_admin']);
+for($i=0;$i<count($gruppi_admin);$i++)
+{
+    if(!isset($gruppi_admin[$i])) $gruppi_admin[$i] = "0";
+}
+?>
+     
+<!-- DIV CONTENITORE -->
+<div style="margin-top:10px; ">
+<div class="ficheaddleft">
+<div id="info" style="margin-top:10px; margin-left:70px;">
+    <?php if(!isset($_GET['id_utente'])&&!isset($_GET['id_gruppo'])&&!isset($_GET['id']))
+    {
+     include('lista_dipendenti.php'); 
+    }
+    else if(isset($_GET['id_utente']))
+    {
+        include('profilo_dip.php');
+    } else if(isset($_GET['id_gruppo']))
+    {
+        include('gestione_gruppi.php');
+    }  else if(isset($_GET['id'])&&$_GET['id']=="ric"){
+        include('ricerca_avanzata.php');
+    }
+    ?>
+</div>
+</div></div></div></div></div>
+</body>
+</html>

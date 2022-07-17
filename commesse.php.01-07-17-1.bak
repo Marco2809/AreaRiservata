@@ -1,0 +1,189 @@
+<!-- GESTIONE RICHIESTE -->
+<?php
+
+if(isset($_POST['add-commessa'])) {
+    $commessa = new Commessa();
+    $commessa->addCommessa($_POST['responsabili'], $_POST['nome-commessa'], 
+            $_POST['cliente'], $_POST['alias']);
+}
+
+?>
+<!--CONTENUTO PRINCIPALE-->
+	  <section class="">
+
+
+	  <div class="panel panel-primary" style="margin-bottom:2%;">
+            <div class="calendar-heading">
+			<div style="padding-left:1%;padding-right:2%;">
+			<span class="legenda-title">Commesse</span>
+			<a href="#">
+			<span class="legenda-title">
+			<i class="fa fa-chevron-circle-left fa-2x" style="float:right;margin-top:-0.5%;"></i>
+			</span>
+			</a>
+			</div>
+			</div>
+
+ <div class="panel-body">
+   <form action="" method="post">
+      <table class="table" style="margin-top:1%;">
+         <tbody>
+            <tr>
+               <td class="td-intestazione">Seleziona Commessa:</td>
+               <td>
+                  <select id="ufficio" name="ufficio" style="width:60%;margin-top:1%;" class="form-control"> 
+                
+<?php        
+    $commessa = new Commessa();
+    $allJobs = $commessa->getAll();
+
+    foreach($allJobs as $job) {
+        echo '<option value="' . $job->id_commessa . '">' . 
+             $job->nome_commessa . '</option>';
+    }
+?>
+              </select>  
+               </td>
+              <td>
+              <a href="#ModalForm" data-toggle="modal" data-target="#ModalForm">
+              <button id="detailJobBtn" type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalEvents">Dettaglio</button>
+              </a>
+              </td>
+            </tr>
+         </tbody>
+      </table>
+   </form>
+   </div>
+</div>
+
+
+
+<div class="panel panel-primary" style="margin-bottom:5%;">
+            <div class="legenda-heading">
+      <div style="padding-left:1%;padding-right:2%;">
+      <span class="legenda-title">Aggiungi Commessa</span>
+      </div>
+      </div>
+
+ <div class="panel-body">
+   <form action="" method="POST">
+        <table class="table" style="margin-top:1%;">
+        <tbody>
+
+        <tr>
+        <td class="td-intestazione">Nome Commessa:</td>
+        <td>
+        <input name="nome-commessa" class="form-control" value="" type="text" required>
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Cliente:</td>
+        <td>
+        <input name="cliente" class="form-control" value="" type="text" required>
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Alias:</td>
+        <td>
+        <input name="alias" class="form-control" value="" type="text" required>
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Responsabile:</td>
+        <td>
+        <select name="responsabili" style="margin-top:1%;" class="form-control"> 
+       <option value="0">1 nome</option>
+       <option value="1">2 nome</option>
+       <option value="2">3 nome</option>
+       </select>
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+        <button type="submit" name="add-commessa" class="btn btn-success">Aggiungi</button>
+        </td>
+        </tr>
+
+        </tbody>
+        </table>
+        </form>
+   </div>
+</div>
+
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->
+
+<!--MODAL DETTAGLIO COMMESSA-->
+<div class="modal fade" id="ModalEvents" role="dialog">
+    <div class="modal-dialog modal-lg">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal">&times;</button>
+             <h4 class="modal-title">DETTAGLIO COMMESSA</h4>
+          </div>
+          <div class="modal-body">
+           <form action="" method="post">
+          <table class="table" style="margin-top:1%;">
+          <tbody>
+
+          <tr>
+          <td class="td-intestazione">Commessa:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Cliente:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Alias:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Responsabile:</td>
+          <td>
+          <select name="responsabili" style="margin-top:1%;" class="form-control"> 
+         <option value="0">1 nome</option>
+         <option value="1">2 nome</option>
+         <option value="2">3 nome</option>
+         </select>
+          </td>
+          </tr>
+
+          <tr>
+          <td>
+          <button type="submit" class="btn btn-success">Modifica</button>
+          <button type="submit" class="btn btn-danger">Annulla</button>
+          </td>
+          </tr>
+
+          </tbody>
+          </table>
+          </form>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+          </div>
+       </div>
+    </div>
+ </div>
+<!--MODAL DETTAGLIO COMMESSA-->
+
+<script type="text/javascript">
+    $('#ufficio').on('change', function() {
+        console.log(this.value);
+        
+    });
+</script>

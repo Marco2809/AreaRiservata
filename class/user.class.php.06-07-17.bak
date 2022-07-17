@@ -1,0 +1,173 @@
+<?php
+session_start();
+require_once('dbconn.php');
+class User
+{
+    public $db;
+    //variabili tabella login
+    private $esperienza;
+    var $id_user;
+    var $username;
+    var $email;
+    var $password;
+    var $recupero;
+    var $is_admin;
+    var $is_active;
+    var $advise;
+
+
+    public function __construct() {  
+        
+        $database = new Database();
+        $dbconn = $database->dbConnection();
+        $this->db = $dbconn;
+    }
+    
+    public function login($username,$password){
+         $this->db = new mysqli("localhost", "root", "", "area_riservata");
+
+         if (empty($_POST['username']) || empty($_POST['password'])) {
+		$error = "Inserire User e/o Password!";
+	}
+	else 
+	{
+		$username = stripslashes($username);
+		$password = stripslashes($password);
+		//$username = mysql_real_escape_string($username);
+		//$password = mysql_real_escape_string($password);
+		
+		
+		$sql = "SELECT username,password,user_idd,is_admin
+		FROM login
+		WHERE username = '$username' AND  password = '$password'";
+		
+		//echo $sql;
+		
+		//eseguo la query
+		$result = $this->db->query($sql);
+		if(! $result )
+		{
+			die('Non riesco a prendere dati: ' . mysql_error());
+		}
+		
+		if (isset($result))
+		{ 
+			$rows = $result->num_rows;
+			
+			if ($rows == 1) {
+                                
+				//Trovato! inizio la sessione
+				session_start();
+				
+				$row = $result->fetch_assoc();
+				 
+				//Arrivato qui.
+				$_SESSION['username'] = $username;
+				$_SESSION['user_idd'] = $row['user_idd'];
+				$_SESSION['logged'] = 1;
+				if($row['is_admin']==1) $_SESSION['is_admin'] = 1;
+                                else if($row['is_admin']==2) $_SESSION['is_admin'] = 2;
+                                else $_SESSION['is_admin'] = 0;
+                                
+                                 $query="SELECT nome,cognome from anagrafica where user_id=".$_SESSION['user_idd'];
+                $result = $this->db->query($query);
+                if($result->num_rows>0){
+                    
+                     $row =$result->fetch_assoc();
+                     $_SESSION['name'] = $row['nome'];
+                     $_SESSION['surname'] = $row['cognome'];
+                }
+                                
+                                $query="SELECT * from commesse where id_responsabile=".$_SESSION['user_idd'];
+                $result = $this->db->query($query);
+              
+                if($result->num_rows>0){
+                
+                    $_SESSION['responsabile']=1;
+                
+                } else $_SESSION['responsabile'] = 0;
+		
+                    $controllo_anag= $this->db->query("SELECT user_id FROM anagrafica WHERE user_id ="."'".$_SESSION['user_idd']."'", $conn->db);
+                    $row1 =$controllo_anag->fetch_assoc();
+	
+		if($controllo_anag->num_rows >0) {
+				if($_SESSION['is_admin']==1) header("location: amministrazione.php");
+
+				else header("location: dashboard.php"); // Redirecting To Other Page
+		} else header("location: anagrafica.php?id='".$_SESSION['user_idd']."'");
+                    header("location: anagrafica.php?id=".$_SESSION['user_idd']."");					
+                }
+                    else {
+                        $error = "User o Password non valide!";
+                    }			
+		}
+
+	}
+         return $error;
+    }
+        
+    public function logout(){
+        session_destroy();
+        header("location: login.php");
+    }
+
+   public function delUser($idUser){
+       
+ $sql = "DELETE FROM login WHERE user_idd =".$idUser;
+ $result = $this->db->query($sql);
+
+ $sql = "DELETE FROM anagrafica WHERE user_id =".$idUser;
+ $result = $this->db->query($sql);
+
+ return $result;
+    }
+    
+    
+    public function createUser($email, $profilo) {
+        $defaultPassword = '6f6bfd120fc9fb50ca47ea0e83bc27b12d2de5a62a6bd7702b8bdf713594453a4a6889cebdd0ffe55c6b5ae983dde560bb6c286a0cfcffc18616e853eb8f6102';
+        $defaultIsActive = 1;
+        $defaultRecupero = '';
+        $defaultAvviso = 0;
+        
+        $stmtInsert = $this->db->prepare("INSERT INTO login (username,
+                password, email, is_admin, is_active, recupero, avviso)
+                VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+        $stmtInsert->bind_param("sssiisi", $email, $defaultPassword, $email, 
+                $profilo, $defaultIsActive, $defaultRecupero, $defaultAvviso);
+        if(!$stmtInsert->execute()) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        
+        $userIdCreated = null;
+        $stmt = $this->db->prepare("SELECT LAST_INSERT_ID()");
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($userIdCreated);
+        $stmt->fetch();
+        return $userIdCreated;
+    }
+    
+    public function getResponsabili() {
+        $outputArray = array();
+        $result = $this->db->query("SELECT login.user_idd, anagrafica.nome, anagrafica.cognome "
+                . "FROM login INNER JOIN anagrafica WHERE anagrafica.user_id = login.user_idd "
+                . "AND (login.is_admin = 1 OR login.is_admin = 2)");
+        while($row = $result->fetch_assoc()) {
+            array_push($outputArray, $row);
+        }
+        return $outputArray;
+    }
+    
+    public function getAll() {
+        $outputArray = array();
+        $result = $this->db->query("SELECT user_id, nome, cognome, data_nascita FROM anagrafica");
+        while($row = $result->fetch_assoc()) {
+            array_push($outputArray, $row);
+        }
+        return $outputArray;
+    }
+}
+
+?>

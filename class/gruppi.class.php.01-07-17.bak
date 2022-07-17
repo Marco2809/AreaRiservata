@@ -1,0 +1,32 @@
+<?php
+
+class Gruppo {
+    
+    private $db;
+    private $id;
+    private $idUser;
+    private $idRole;
+    
+    public function __construct() {
+        $this->id = null;
+        $this->idUser = null;
+        $this->idRole = null;
+        
+        
+    }
+    
+    public function createUserGruppi($idUtente, $infoArray) {
+        // array(idGruppo-idRuolo)
+        $stmtInsert = $this->db->prepare("INSERT INTO user_groups (id_gruppo,
+                id_user, id_role) VALUES (?, ?, ?)");
+
+        $stmtInsert->bind_param("iii", $idGruppo, $idUtente, $idRuolo);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+    
+}

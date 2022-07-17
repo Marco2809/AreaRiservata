@@ -1,0 +1,104 @@
+/*
+//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css
+*/
+* {
+  box-sizing: border-box;
+}
+
+*:before {
+  box-sizing: border-box;
+}
+
+*:after {
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 1em;
+}
+
+.row:before {
+  display: table;
+  content: " ";
+}
+
+.grid-calendar {
+  min-width: 320px;
+}
+.grid-calendar .row {
+    /*
+      override these from bootstrap
+
+      margin-right: -15px;
+      margin-left: -15px;
+    */
+  margin: 0;
+}
+.grid-calendar .calendar-week .grid-cell {
+  background-color: #f6f6f6;
+  border: 1px solid #dedede;
+}
+.days {
+  font-weight:bold;
+  color:#333;
+  font-size:14px;
+}
+.grid-calendar .calendar-week-header .grid-cell > div > div {
+  height: auto;
+  
+}
+.giornisettimana {
+  background-color:#98d74c;
+  height:auto;
+  padding-bottom:1%;
+  padding-top:1%;
+  width: 14.28571%;
+  display: inline-block;
+  float: left;
+  min-height: 1px;
+  position: relative;
+  border: 1px inset  #dedede;
+  
+}
+.mese {
+ margin-bottom:3%;
+ color:#9a2633;
+ font-weight:bold;
+ font-size:40px;
+  
+}
+.grid-calendar .grid-cell.festivo{
+  background-color:#f12b2b;
+  color:#fff;
+}
+.grid-calendar .grid-cell {
+  display: inline-block;
+  float: left;
+  min-height: 1px;
+  padding-bottom:5%;
+  position: relative;
+  width: 14.28571%;
+  height:18%;
+  border: 1px inset  #dedede;
+}
+.grid-calendar .grid-cell.previous-month {
+  color: #a6a6a6;
+}
+.grid-calendar .grid-cell.next-month {
+  background-color: #e1e1e1;
+}
+.grid-calendar .grid-cell.sab-dom {
+  background-color: #bababa;
+}
+.grid-calendar .grid-cell > div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.grid-calendar .grid-cell > div > div {
+  height: 0;
+  padding: 50% 0;
+}

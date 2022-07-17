@@ -1,0 +1,1578 @@
+<!--Autori: Margherita Salzedo e Alberto Carrafa-->
+
+
+<?php
+session_start();
+//ciao
+include('dbconn.php');
+
+$conn = new dbconnect();
+$r = $conn->connect();
+
+//Gestione errori.
+//ini_set('display_errors','On');
+//error_reporting(E_ALL);
+//echo $_SESSION['user_idd'];
+
+if (!isset($_SESSION['username']))
+    header("location: login.htm.php");
+
+if (isset($_REQUEST['action'])) {
+    $action = $_REQUEST['action'];
+	
+} else {
+    $action = '';
+}
+
+$cod_user = $_SESSION['user_idd'];
+$cod_anagr = $_SESSION['user_idd'];
+$alert = "";
+
+if(isset($_POST["submit"])&& $_POST["submit"]=="Carica Immagine")
+    {
+   
+$target_dir = "C:/xampp/htdocs/servicetech/img/CV/";
+$temp = explode(".", $_FILES["fileToUpload"]["name"]);
+$newfilename = $_POST["id_cv"] . '.' . end($temp);
+$target_file = $target_dir . $newfilename;
+$uploadOk = 1;
+$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+// Check if image file is a actual image or fake image
+if(isset($_POST["submit"])&&$_POST["submit"]=="img_upload") {
+    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+    if($check !== false) {
+        $alert .= "<p align='center' style='color:red'>File is an image - " . $check["mime"] . "</p>";
+        $uploadOk = 1;
+    } else {
+        $alert .= "<p align='center' style='color:red'>File is not an image.</p>";
+        $uploadOk = 0;
+    }
+}
+// Check if file already exists
+/*if (file_exists($target_file)) {
+    $alert .= "<p align='center' style='color:red'>Sorry, file already exists.</p>";
+    $uploadOk = 0;
+}*/
+// Check file size
+if ($_FILES["fileToUpload"]["size"] > 1000000) {
+    $alert .= "<p align='center' style='color:red'>Sorry, your file is too large.</p>";
+    $uploadOk = 0;
+}
+// Allow certain file formats
+if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+&& $imageFileType != "gif" ) {
+    $alert .= "<p align='center' style='color:red'>Sorry, only JPG, JPEG, PNG & GIF files are allowed.</p>";
+    $uploadOk = 0;
+}
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0) {
+    $alert .= "<p align='center' style='color:red'>Sorry, your file was not uploaded.</p>";
+// if everything is ok, try to upload file
+} else {
+    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+        $sql_conoscenza = "UPDATE anagrafica
+						
+						   SET 
+						   img_name = '" . $cod_user . "'
+						   WHERE user_id ='" . $cod_user . "'";
+		 
+		  $result_conoscenza = mysql_query($sql_conoscenza, $conn->db);
+		  
+		  if (!$result_conoscenza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } 
+        $alert .= "<p align='center' style='color:red'>The file has been uploaded.</p>";
+
+    } else {
+         $alert .= "<p align='center' style='color:red'>Sorry, there was an error uploading your file.</p>";
+    }
+}
+if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		}
+}
+switch ($action) {
+	
+	case 'Aggiorna Istruzione':
+	
+	if (isset($_REQUEST['id_form']) && $_REQUEST['id_form'] != '') {
+            $id_form = $_REQUEST['id_form'];
+        } 
+
+		if (isset($_REQUEST['istituto']) && $_REQUEST['istituto'] != '' && $_REQUEST['istituto'] != 'Altro' ) {
+            $istituto = $_REQUEST['istituto'];
+        } 	
+		else if (isset($_REQUEST['istituto_altro']) && $_REQUEST['istituto_altro'] != '') {
+            $istituto = $_REQUEST['istituto_altro'];
+		}
+		else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il tipo di istituto!</p>";
+        }
+		
+        if (isset($_REQUEST['laurea']) && $_REQUEST['laurea'] != '') {
+            $laurea = $_REQUEST['laurea'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo di Laurea!</p>";
+            
+        }
+		
+		if (isset($_REQUEST['titolo']) && $_REQUEST['titolo'] != '') {
+            $titolo = $_REQUEST['titolo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo di studi!</p>";
+            
+        }
+
+        if (isset($_REQUEST['corso']) && $_REQUEST['corso'] != '') {
+            $corso = $_REQUEST['corso'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il corso di studi!</p>";
+            
+        }
+
+        if ((isset($_REQUEST['da_giorno_formazione']) && $_REQUEST['da_giorno_formazione'] != '') && (isset($_REQUEST['da_mese_formazione']) && $_REQUEST['da_mese_formazione'] != '') && (isset($_REQUEST['da_anno_formazione']) && $_REQUEST['da_anno_formazione'] != '')) {
+            $da_formazione = $_REQUEST['da_anno_formazione'] . "-" . $_REQUEST['da_mese_formazione'] . "-" . $_REQUEST['da_giorno_formazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio della formazione!</p>";
+            
+        }
+
+       if (isset($_REQUEST['in_corso'])) {
+            $a_formazione = "0000-00-00";
+		} else if ((isset($_REQUEST['a_giorno_formazione']) && $_REQUEST['a_giorno_formazione'] != '') && (isset($_REQUEST['a_mese_formazione']) && $_REQUEST['a_mese_formazione'] != '') && (isset($_REQUEST['a_anno_formazione']) && $_REQUEST['a_anno_formazione'] != '')) {
+            $a_formazione = $_REQUEST['a_anno_formazione'] . "-" . $_REQUEST['a_mese_formazione'] . "-" . $_REQUEST['a_giorno_formazione'];
+        }  else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine della formazione!</p>";
+            
+        }
+
+        if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+        } else {
+			$descrizione = "";	
+		}
+		
+        if (isset($_REQUEST['esperienza_estera']) && $_REQUEST['esperienza_estera'] != '' && $_REQUEST['esperienza_estera'] != 'Esperienza Estera') {
+            $esperienza_estera = $_REQUEST['esperienza_estera'];
+        } else if($_REQUEST['esperienza_estera']=="Esperienza Estera") {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire lo stato dell'esperienza estera!</p>";
+           
+        }
+		
+		if (isset($_REQUEST['voto']) && $_REQUEST['voto'] != '') {
+            $voto = $_REQUEST['voto'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il voto conseguito!</p>";
+           
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		  break;
+		}
+		
+        $sql_esperienza = "UPDATE formazione
+						
+						   SET 
+						   
+						   istituto = '" . $istituto . "',
+                 		   titolo = '" .$titolo. "',
+				           corso = '" .$corso. "',
+						   da = '" .$da_formazione ."',
+						   a = '" .$a_formazione. "',
+						   voto = '" .$voto. "',
+						   laurea = '" .$laurea."',
+						   descrizione = '" .$descrizione. "',
+						   esperienza_estera= '" .$esperienza_estera. "'
+						   
+						   WHERE id_form ='" . $id_form . "'";
+		 
+		  $result_esperienza = mysql_query($sql_esperienza, $conn->db);
+		  
+		  if (!$result_esperienza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		}
+		
+	break;
+	
+	case 'Aggiorna Esperienza':
+
+		if (isset($_REQUEST['azienda']) && $_REQUEST['azienda'] != '') {
+            $azienda = $_REQUEST['azienda'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'azienda!</p>";
+            
+        }
+		
+		if (isset($_REQUEST['ruolo']) && $_REQUEST['ruolo'] != '') {
+            $ruolo = $_REQUEST['ruolo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il ruolo ricoperto in azienda!</p>";
+            
+        }
+
+        if (isset($_REQUEST['indirizzo']) && $_REQUEST['indirizzo'] != '') {
+            $indirizzo = $_REQUEST['indirizzo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'indirizzo!</p>";
+            
+        }
+
+        if (isset($_REQUEST['mansione']) && $_REQUEST['mansione'] != '') {
+            $mansione = $_REQUEST['mansione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la mansione!</p>";
+            
+        }
+		
+
+        if ((isset($_REQUEST['da_giorno_esperienza']) && $_REQUEST['da_giorno_esperienza'] != '') && (isset($_REQUEST['da_mese_esperienza']) && $_REQUEST['da_mese_esperienza'] != '') && (isset($_REQUEST['da_anno_esperienza']) && $_REQUEST['da_anno_esperienza'] != '')) {
+            $da_esperienza = $_REQUEST['da_anno_esperienza'] . "-" . $_REQUEST['da_mese_esperienza'] . "-" . $_REQUEST['da_giorno_esperienza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio dell'esperienza!</p>";
+            
+        }
+
+		if(isset($_REQUEST['attuale']) && $_REQUEST['attuale'] == 'Si'){
+			$a_esperienza = "0000-00-00";
+		} else if ((isset($_REQUEST['a_giorno_esperienza']) && $_REQUEST['a_giorno_esperienza'] != '') && (isset($_REQUEST['a_mese_esperienza']) && $_REQUEST['a_mese_esperienza'] != '') && (isset($_REQUEST['a_anno_esperienza']) && $_REQUEST['a_anno_esperienza'] != '')) {
+            $a_esperienza = $_REQUEST['a_anno_esperienza'] . "-" . $_REQUEST['a_mese_esperienza'] . "-" . $_REQUEST['a_giorno_esperienza'];
+        }  else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine dell'esperienza!</p>";
+            
+        }
+
+        if (isset($_REQUEST['note']) && $_REQUEST['note'] != '') {
+            $note = $_REQUEST['note'];
+        } else {
+			$note = "";	
+		}
+		
+        if (isset($_REQUEST['attuale']) && $_REQUEST['attuale'] != '') {
+            $attuale = $_REQUEST['attuale'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire attuale!</p>"; 
+        }
+		  
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		  break;
+		}
+		
+        $sql_esperienza = "UPDATE esperienza
+						
+						   SET 
+						   
+						   azienda = '" . $azienda . "',
+                 		   indirizzo = '" .$indirizzo. "',
+				           mansione = '" .$mansione. "',
+						   ruolo = '" .$ruolo. "',
+						   da = '" .$da_esperienza ."',
+						   a = '" .$a_esperienza. "',
+						   attuale = '" .$attuale. "',
+						   note = '" .mysql_real_escape_string($note). "'
+						   
+						   
+						   WHERE user_id ='" . $cod_user . "'";
+		 
+		  $result_esperienza = mysql_query($sql_esperienza, $conn->db);
+		  
+		  if (!$result_esperienza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		}
+		
+	break;
+	
+	case 'Aggiorna Anagrafica':
+
+		if (isset($_REQUEST['nome']) && $_REQUEST['nome'] != '') {
+            $nome = $_REQUEST['nome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il nome!</p>";
+        }
+		
+		if (isset($_REQUEST['codice_fiscale']) && $_REQUEST['codice_fiscale'] != '') {
+            $codice_fiscale = $_REQUEST['codice_fiscale'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il codice fiscale!</p>";
+        }
+		
+
+        if (isset($_REQUEST['cognome']) && $_REQUEST['cognome'] != '') {
+            $cognome = $_REQUEST['cognome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il cognome!</p>";
+        }
+
+        if (isset($_REQUEST['indirizzo_residenza']) && $_REQUEST['indirizzo_residenza'] != '') {
+            $indirizzo_residenza = $_REQUEST['indirizzo_residenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'indirizzo di residenza!</p>";
+        }
+
+        if (isset($_REQUEST['luogo_nascita']) && $_REQUEST['luogo_nascita'] != '') {
+            $luogo_nascita = $_REQUEST['luogo_nascita'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il luogo di nascita!</p>";
+        }
+
+        if (isset($_REQUEST['indirizzo_domicilio']) && $_REQUEST['indirizzo_domicilio'] != '') {
+            $indirizzo_domicilio = $_REQUEST['indirizzo_domicilio'];
+        } else {
+            $indirizzo_domicilio = "";
+		}
+
+        if ((isset($_REQUEST['giorno_anagrafica']) && $_REQUEST['giorno_anagrafica'] != '') && (isset($_REQUEST['mese_anagrafica']) && $_REQUEST['mese_anagrafica'] != '') && (isset($_REQUEST['anno_anagrafica']) && $_REQUEST['anno_anagrafica'] != '')) {
+            $data_nascita = $_REQUEST['anno_anagrafica'] . "-" . $_REQUEST['mese_anagrafica'] . "-" . $_REQUEST['giorno_anagrafica'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la data di nascita!</p>";
+        }
+
+        if (isset($_REQUEST['citta_residenza']) && $_REQUEST['citta_residenza'] != '') {
+            $citta_residenza = $_REQUEST['citta_residenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la propria città di residenza!</p>";
+        }
+
+        if (isset($_REQUEST['citta_domicilio']) && $_REQUEST['citta_domicilio'] != '') {
+            $citta_domicilio = $_REQUEST['citta_domicilio'];
+        } else {
+            $citta_domicilio = "";
+        }
+		
+		if(isset($alert)&&$alert!="")
+		{
+		 echo $alert;
+		 break;	
+		}
+		
+        $sql_conoscenza = "UPDATE anagrafica
+						
+						   SET 
+						   nome = '" . $nome . "',
+                 		   cognome = '" .$cognome. "',
+				           luogo_nascita = '" .$luogo_nascita. "',
+						   data_nascita = '" .$data_nascita. "',
+						   citta_residenza = '" .$citta_residenza. "',
+						   indirizzo_residenza = '" .$indirizzo_residenza. "',
+						   citta_domicilio = '" .$citta_domicilio. "',
+						   indirizzo_domicilio = '" .$indirizzo_domicilio. "',
+						   codice_fiscale  = '" .strtoupper($codice_fiscale). "'
+						   WHERE user_id ='" . $cod_user . "'";
+		 
+		  $result_conoscenza = mysql_query($sql_conoscenza, $conn->db);
+		  
+		  if (!$result_conoscenza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert))
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	case 'Elimina Conoscenza':
+	
+	$sq_elimina_con = "DELETE FROM conoscenze
+						   WHERE id ='" . $_POST['id_con'] . "'";
+		 
+		  $result_elimina_con = mysql_query($sq_elimina_con, $conn->db);
+		  
+		  if (!$result_elimina_con) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert))
+		{
+		 echo $alert;	
+		}
+		
+	break;
+        
+        case 'Elimina Corso':
+	
+	$sq_elimina_con = "DELETE FROM corsi
+						   WHERE id_corso ='" . $_POST['id_corso'] . "'";
+		 
+		  $result_elimina_con = mysql_query($sq_elimina_con, $conn->db);
+		  
+		  if (!$result_elimina_con) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert))
+		{
+		 echo $alert;	
+		}
+		
+	break;
+        
+        case 'Elimina Corso':
+	
+	$sq_elimina_con = "DELETE FROM corsi
+						   WHERE id_corso ='" . $_POST['id_corso'] . "'";
+		 
+		  $result_elimina_con = mysql_query($sq_elimina_con, $conn->db);
+		  
+		  if (!$result_elimina_con) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert))
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	case 'Elimina Competenza':
+	
+	$sq_elimina_com = "DELETE FROM conoscenze
+						   WHERE id ='" . $_POST['id_com_acq'] . "'";
+		 
+		  $result_elimina_com = mysql_query($sq_elimina_com, $conn->db);
+		  
+		  if (!$result_elimina_com) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	case 'Elimina Esperienza':
+	
+	$sq_elimina_esp = "DELETE FROM esperienza
+						   WHERE id_esp ='" . $_POST['id_esp'] . "'";
+		 
+		  $result_elimina_esp = mysql_query($sq_elimina_esp, $conn->db);
+		  
+		  if (!$result_elimina_esp) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	case 'Elimina Certificazione':
+	
+	$sq_elimina_con = "DELETE FROM certificazione
+						   WHERE id ='" . $_POST['id_cer'] . "'";
+		 
+		  $result_elimina_con = mysql_query($sq_elimina_con, $conn->db);
+		  
+		  if (!$result_elimina_con) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	
+	case 'Aggiorna Certificazione':
+
+		if (isset($_REQUEST['id_cer']) && $_REQUEST['id_cer'] != '') {
+            $id = $_REQUEST['id_cer'];
+		}
+		
+        if (isset($_REQUEST['titolo_certificazione']) && $_REQUEST['titolo_certificazione'] != '') {
+            $titolo_certificazione = $_REQUEST['titolo_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo!</p>";break;
+        }
+
+        if (isset($_REQUEST['ente_certificante']) && $_REQUEST['ente_certificante'] != '') {
+            $ente_certificante = $_REQUEST['ente_certificante'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l' ente certificante!</p>"; break;
+        }
+
+        if (isset($_REQUEST['cod_licenza']) && $_REQUEST['cod_licenza'] != '') {
+            $cod_licenza = $_REQUEST['cod_licenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il codice licenza!</p>";break;
+        }
+
+        if (isset($_REQUEST['url']) && $_REQUEST['url'] != '') {
+            $url = $_REQUEST['url'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il sito utilizzato!</p>";break;
+        }
+
+        if ((isset($_REQUEST['da_giorno_certificazione']) && $_REQUEST['da_giorno_certificazione'] != '') && (isset($_REQUEST['da_mese_certificazione']) && $_REQUEST['da_mese_certificazione'] != '') && (isset($_REQUEST['da_anno_certificazione']) && $_REQUEST['da_anno_certificazione'] != '')) {
+            $da_certificazione = $_REQUEST['da_anno_certificazione'] . "-" . $_REQUEST['da_mese_certificazione'] . "-" . $_REQUEST['da_giorno_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio della certificazione!</p>";
+        }
+
+        if ((isset($_REQUEST['a_giorno_certificazione']) && $_REQUEST['a_giorno_certificazione'] != '') && (isset($_REQUEST['a_mese_certificazione']) && $_REQUEST['a_mese_certificazione'] != '') && (isset($_REQUEST['a_anno_certificazione']) && $_REQUEST['a_anno_certificazione'] != '')) {
+            $a_certificazione = $_REQUEST['a_anno_certificazione'] . "-" . $_REQUEST['a_mese_certificazione'] . "-" . $_REQUEST['a_giorno_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine della certificazione!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		 break;	
+		}
+		
+        $sql_conoscenza = "UPDATE certificazione
+						
+						   SET 
+						   titolo_certificazione = '" . $titolo_certificazione . "',
+                 		   cod_licenza = '" .$cod_licenza. "',
+				           url = '" .$url. "',
+						   ente_certificante = '" .$ente_certificante. "',
+						   url = '" .$url. "',
+						   da = '" .$da_certificazione. "',
+						   a = '" .$a_certificazione. "'
+						   WHERE id ='" . $id . "'";
+		 
+		  $result_conoscenza = mysql_query($sql_conoscenza, $conn->db);
+		  
+		  if (!$result_conoscenza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+	
+	case 'Aggiorna Competenza':
+
+		if (isset($_REQUEST['id_con']) && $_REQUEST['id_con'] != '') {
+            $id = $_REQUEST['id_con'];
+		}
+		
+        if (isset($_REQUEST['livello']) && $_REQUEST['livello'] != '') {
+            $livello = $_REQUEST['livello'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il livello!</p>";
+        }
+		
+        if (isset($_REQUEST['tipologia']) && $_REQUEST['tipologia'] != '') {
+            $tipologia = $_REQUEST['tipologia'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la tipologia!</p>";
+        }
+		if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+		} else {
+			$alert .= "<p align='center' style='color:red'>Attenzione: inserire la descrizione!</p>";	
+		}
+		
+		if(isset($alert)&&$alert!="")
+		{
+		 echo $alert;
+		 break;	
+		}
+		
+		
+        $sql_conoscenza = "UPDATE conoscenze
+						
+						   SET 
+						   livello = '" . $livello . "',
+                 		   tipologia = '" .$tipologia. "',
+				           descrizione = '" .$descrizione. "'
+						   WHERE id ='" . $id . "'";
+		 
+		  $result_conoscenza = mysql_query($sql_conoscenza, $conn->db);
+		  
+		  if (!$result_conoscenza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert)&&$alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+        
+        case 'Aggiorna Corso':
+
+		if (isset($_REQUEST['id_corso']) && $_REQUEST['id_corso'] != '') {
+            $id_corso = $_REQUEST['id_corso'];
+		}
+		
+        if (isset($_REQUEST['tipo']) && $_REQUEST['tipo'] != '') {
+            $tipo = $_REQUEST['tipo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il tipo di corso!</p>";
+        }
+		
+        if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+        } 
+		
+		if(isset($alert)&&$alert!="")
+		{
+		 echo $alert;
+		 break;	
+		}
+		
+		
+        $sql_conoscenza = "UPDATE corsi
+						
+						   SET 
+						   tipo = '" . $tipo . "',
+                                                   descrizione = '" .mysql_real_escape_string($descrizione). "'
+						   WHERE id_corso ='" . $id_corso . "'";
+		 
+		  $result_conoscenza = mysql_query($sql_conoscenza, $conn->db);
+		  
+		  if (!$result_conoscenza) {
+			  
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+			
+			$alert = "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		
+		if(isset($alert)&&$alert!="")
+		{
+		 echo $alert;	
+		}
+		
+	break;
+	
+    
+    case 'Salva Istruzione':
+	
+		if (isset($_REQUEST['laurea']) && $_REQUEST['laurea'] != '') {
+            $laurea = $_REQUEST['laurea'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo di Laurea!</p>";
+            
+        }
+	
+        if (isset($_REQUEST['istituto']) && $_REQUEST['istituto'] != '' && $_REQUEST['istituto'] != 'Altro' ) {
+            $istituto = $_REQUEST['istituto'];
+        } 	
+		else if (isset($_REQUEST['istituto_altro']) && $_REQUEST['istituto_altro'] != '') {
+            $istituto = $_REQUEST['istituto_altro'];
+		}
+		else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il tipo di istituto!</p>";
+        }
+	
+        if ((isset($_REQUEST['da_giorno_formazione']) && $_REQUEST['da_giorno_formazione'] != '') && (isset($_REQUEST['da_mese_formazione']) && $_REQUEST['da_mese_formazione'] != '') && $_REQUEST['da_mese_formazione'] != 'Mese' && (isset($_REQUEST['da_anno_formazione']) && $_REQUEST['da_anno_formazione'] != '' && $_REQUEST['da_anno_formazione'] != 'Anno')) {
+            $da_formazione = $_REQUEST['da_anno_formazione'] . "-" . $_REQUEST['da_mese_formazione'] . "-" . $_REQUEST['da_giorno_formazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio della Formazione!</p>"; 
+        }
+
+        if ((isset($_REQUEST['a_giorno_formazione']) && $_REQUEST['a_giorno_formazione'] != '') && (isset($_REQUEST['a_mese_formazione']) && $_REQUEST['a_mese_formazione'] != '') && $_REQUEST['a_mese_formazione'] != 'Mese' && (isset($_REQUEST['a_anno_formazione']) && $_REQUEST['a_anno_formazione'] != '' && $_REQUEST['a_anno_formazione'] != 'Anno' )) {
+            $a_formazione = $_REQUEST['a_anno_formazione'] . "-" . $_REQUEST['a_mese_formazione'] . "-" . $_REQUEST['a_giorno_formazione'];
+        } else if (isset($_REQUEST['in_corso'])) {
+            $a_formazione = "0000-00-00";
+		} else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine della Formazione!</p>";
+        }
+
+        if (isset($_REQUEST['titolo']) && $_REQUEST['titolo'] != '') {
+            $titolo = $_REQUEST['titolo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo della Formazione!</p>";
+        }
+
+        if (isset($_REQUEST['corso']) && $_REQUEST['corso'] != '') {
+            $corso = $_REQUEST['corso'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il corso della Formazione!</p>";
+        }
+
+        if (isset($_REQUEST['voto'])) {
+            $voto = $_REQUEST['voto'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il voto!</p>";
+        }
+
+        if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la descrizione della Formazione!</p>";
+        }
+
+        if (isset($_REQUEST['esperienza_estera']) && $_REQUEST['esperienza_estera'] != '' && $_REQUEST['esperienza_estera'] != 'Esperienza Estera') {
+            $esperienza_estera = $_REQUEST['esperienza_estera'];
+        } else if($_REQUEST['esperienza_estera']=="Esperienza Estera") {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire lo stato dell'esperienza estera!</p>";
+           
+        }
+	
+		if(isset($alert) && $alert!='')
+		{
+		
+		 echo $alert;	
+		 break;
+		}
+		
+		
+
+        $sql_formazione = "INSERT INTO `formazione` (   
+													`id_form`,
+													`user_id`,
+													`istituto`, 
+													`da`,
+													`a`,
+													`titolo`,
+													`corso`,
+													`laurea`,
+													`voto`,
+													`descrizione`,
+													`esperienza_estera`
+													)
+										VALUES (
+												NULL,
+												'" . $cod_anagr . "',
+												'" . mysql_real_escape_string($istituto) . "',
+												'" . $da_formazione . "',
+												'" . $a_formazione . "',
+												'" . mysql_real_escape_string($titolo) . "',
+												'" . mysql_real_escape_string($corso) . "',
+												'" . mysql_real_escape_string($laurea) . "',
+												'" . mysql_real_escape_string($voto) . "',
+												'" . mysql_real_escape_string($descrizione) . "',
+												'" . mysql_real_escape_string($esperienza_estera) . "')";
+
+        $result_formazione = mysql_query($sql_formazione, $conn->db);
+
+        if (!$result_formazione) {
+            die('Errore di inserimento dati : ' . mysql_error());
+			
+        } else {
+				
+            $alert = "<p align='center' style='color:red'>Salvataggio effettuato con successo!</p>";
+        }
+		if(isset($alert) && $alert!='')
+		{
+		 echo $alert;	
+		}
+		
+        break;
+
+ case 'Salva Esperienza':
+
+        if (isset($_REQUEST['azienda']) && $_REQUEST['azienda'] != '') {
+            $azienda = $_REQUEST['azienda'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'azienda!</p>";
+            
+        }
+		
+		if (isset($_REQUEST['ruolo']) && $_REQUEST['ruolo'] != '') {
+            $ruolo = $_REQUEST['ruolo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il ruolo ricoperto in azienda!</p>";
+            
+        }
+
+        if (isset($_REQUEST['indirizzo']) && $_REQUEST['indirizzo'] != '') {
+            $indirizzo = $_REQUEST['indirizzo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'indirizzo!</p>";
+            
+        }
+
+        if (isset($_REQUEST['mansione']) && $_REQUEST['mansione'] != '') {
+            $mansione = $_REQUEST['mansione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la mansione!</p>";
+            
+        }
+
+        if ((isset($_REQUEST['da_giorno_esperienza']) && $_REQUEST['da_giorno_esperienza'] != '') && (isset($_REQUEST['da_mese_esperienza']) && $_REQUEST['da_mese_esperienza'] != '') && (isset($_REQUEST['da_anno_esperienza']) && $_REQUEST['da_anno_esperienza'] != '' && $_REQUEST['da_anno_esperienza'] != 'Anno' && $_REQUEST['da_mese_esperienza'] != 'Mese')) {
+            $da_esperienza = $_REQUEST['da_anno_esperienza'] . "-" . $_REQUEST['da_mese_esperienza'] . "-" . $_REQUEST['da_giorno_esperienza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio dell'esperienza!</p>";
+            
+        }
+		
+		if(isset($_REQUEST['attuale']) && $_REQUEST['attuale'] == 'Si'){
+			$a_esperienza = "0000-00-00";
+		} else if ((isset($_REQUEST['a_giorno_esperienza']) && $_REQUEST['a_giorno_esperienza'] != '') && (isset($_REQUEST['a_mese_esperienza']) && $_REQUEST['a_mese_esperienza'] != '' && $_REQUEST['a_mese_esperienza'] != 'Mese' && $_REQUEST['a_anno_esperienza'] != 'Anno') && (isset($_REQUEST['a_anno_esperienza']) && $_REQUEST['a_anno_esperienza'] != '')) {
+            $a_esperienza = $_REQUEST['a_anno_esperienza'] . "-" . $_REQUEST['a_mese_esperienza'] . "-" . $_REQUEST['a_giorno_esperienza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine dell'esperienza!</p>";    
+        }
+		
+        if (isset($_REQUEST['note']) && $_REQUEST['note'] != '') {
+            $note = $_REQUEST['note'];
+        } else {
+			$note = "";	
+		}
+		
+        if (isset($_REQUEST['attuale']) && $_REQUEST['attuale'] != '') {
+            $attuale = $_REQUEST['attuale'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire attuale!</p>";
+           
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;
+		  break;
+		}
+
+
+        $sql_esperienza = "INSERT INTO `esperienza` (  
+													`id_esp`,
+													`user_id`,
+													`azienda`,
+													`indirizzo`,
+													`mansione`,
+													`ruolo`,
+													`da`,
+													`a`,
+													`attuale`,
+													`note`
+													)
+										VALUES (
+												NULL,
+												'" . $cod_anagr . "',
+												'" . mysql_real_escape_string($azienda) . "',
+												'" . mysql_real_escape_string($indirizzo) . "',
+												'" . mysql_real_escape_string($mansione) . "',
+												'" . mysql_real_escape_string($ruolo) . "',
+												'" . $da_esperienza . "',
+												'" . $a_esperienza . "',
+												'" . mysql_real_escape_string($attuale) . "',
+												'" . mysql_real_escape_string($note) . "')";
+
+        $result_esperienza = mysql_query($sql_esperienza, $conn->db);
+
+        if (!$result_esperienza) {
+            die('Errore di inserimento dati : ' . mysql_error());
+        } else {
+          
+            $alert .= "<p align='center' style='color:red'>Aggiornamento avvenuto con successo!</p>";
+        }
+		if(isset($alert))
+		{
+		 echo $alert;	
+		}
+
+        break;
+
+    case 'Salva Competenza':
+
+
+        if (isset($_REQUEST['tipologia']) && $_REQUEST['tipologia'] != '') {
+            $tipologia = $_REQUEST['tipologia'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la tipologia !</p>";
+        }
+
+        if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la descrizione!</p>";
+        }
+
+        if (isset($_REQUEST['livello']) && $_REQUEST['livello'] != '') {
+            $livello = $_REQUEST['livello'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il livello!</p>";
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		 break;
+		}
+        
+
+
+        $sql_conoscenze = "INSERT INTO `conoscenze` (   
+													`user_id`,
+													`tipologia`,
+													`descrizione`,
+													`livello`
+												)
+										VALUES (
+												'" . $cod_anagr . "',
+												'" . mysql_real_escape_string($tipologia) . "',
+												'" . mysql_real_escape_string($descrizione) . "',
+												'" . mysql_real_escape_string($livello) . "'
+												)";
+
+
+        //echo $sql;
+        //die($sql);
+
+        $result_conoscenze = mysql_query($sql_conoscenze, $conn->db);
+
+        if (!$result_conoscenze) {
+            die('Errore di inserimento dati : ' . mysql_error());
+        } else {
+
+            $alert = "<p align='center' style='color:red'>Salvataggio effettuato con successo!</p>";
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+        break;
+        
+        case 'Salva Corso':
+
+
+        if (isset($_REQUEST['id_corso']) && $_REQUEST['id_corso'] != '') {
+            $id_corso = $_REQUEST['id_corso'];
+		}
+		
+        if (isset($_REQUEST['tipo']) && $_REQUEST['tipo'] != '') {
+            $tipo = $_REQUEST['tipo'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il tipo di corso!</p>";
+        }
+		
+        if (isset($_REQUEST['descrizione']) && $_REQUEST['descrizione'] != '') {
+            $descrizione = $_REQUEST['descrizione'];
+        } 
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		 break;
+		}
+        
+
+
+        $sql_conoscenze = "INSERT INTO `corsi` (                                                        `id_corso`,
+													`user_id`,
+													`tipo`,
+													`descrizione`
+												)
+										VALUES (        
+                                                                                                NULL,
+												'" . $cod_anagr . "',
+												'" . mysql_real_escape_string($tipo) . "',
+												'" . mysql_real_escape_string($descrizione) . "'
+												)";
+
+
+        //echo $sql;
+        //die($sql);
+
+        $result_conoscenze = mysql_query($sql_conoscenze, $conn->db);
+
+        if (!$result_conoscenze) {
+            die('Errore di inserimento dati : ' . mysql_error());
+        } else {
+
+            $alert = "<p align='center' style='color:red'>Salvataggio effettuato con successo!</p>";
+        }
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+        break;
+		
+    case 'Salva Certificazione':
+
+
+        if (isset($_REQUEST['titolo_certificazione']) && $_REQUEST['titolo_certificazione'] != '') {
+            $titolo_certificazione = $_REQUEST['titolo_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il titolo della certificazione!</p>";
+        }
+
+        if (isset($_REQUEST['ente_certificante']) && $_REQUEST['ente_certificante'] != '') {
+            $ente_certificante = $_REQUEST['ente_certificante'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l' ente certificante!</p>";
+        }
+
+        if (isset($_REQUEST['cod_licenza']) && $_REQUEST['cod_licenza'] != '') {
+            $cod_licenza = $_REQUEST['cod_licenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il codice licenza!</p>";
+        }
+
+        if (isset($_REQUEST['url']) && $_REQUEST['url'] != '') {
+            $url = $_REQUEST['url'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il sito!</p>";
+        }
+
+        if ((isset($_REQUEST['da_giorno_certificazione']) && $_REQUEST['da_giorno_certificazione'] != '') && (isset($_REQUEST['da_mese_certificazione']) && $_REQUEST['da_mese_certificazione'] != '') && (isset($_REQUEST['da_anno_certificazione']) && $_REQUEST['da_anno_certificazione'] != 'Anno' && $_REQUEST['a_mese_certificazione'] != 'Mese' && $_REQUEST['da_mese_certificazione'] != 'Mese'&& $_REQUEST['a_anno_certificazione'] != 'Anno'  && $_REQUEST['da_anno_certificazione'] != '')) {
+            $da_certificazione = $_REQUEST['da_anno_certificazione'] . "-" . $_REQUEST['da_mese_certificazione'] . "-" . $_REQUEST['da_giorno_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'inizio della certificazione!</p>";
+        }
+
+        if ((isset($_REQUEST['a_giorno_certificazione']) && $_REQUEST['a_giorno_certificazione'] != '') && (isset($_REQUEST['a_mese_certificazione']) && $_REQUEST['a_mese_certificazione'] != '') && (isset($_REQUEST['a_anno_certificazione']) && $_REQUEST['a_anno_certificazione'] != '')) {
+            $a_certificazione = $_REQUEST['a_anno_certificazione'] . "-" . $_REQUEST['a_mese_certificazione'] . "-" . $_REQUEST['a_giorno_certificazione'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la fine della certificazione!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		 break;
+		}
+        $sql_certificazione = "INSERT INTO `certificazione` (  
+		 											`id`,
+													`user_id`,
+													`titolo_certificazione`,
+													`ente_certificante`,
+													`cod_licenza`,
+													`url`,
+													`da`,
+													`a`)
+										VALUES (
+												NULL,
+												'" . $cod_anagr . "',
+												'" . mysql_real_escape_string($titolo_certificazione) . "',
+												'" . mysql_real_escape_string($ente_certificante) . "',
+												'" . mysql_real_escape_string($cod_licenza) . "',
+												'" . mysql_real_escape_string($url) . "',
+												'" . $da_certificazione . "',
+												'" . $a_certificazione . "')";
+
+
+        $result_certificazione = mysql_query($sql_certificazione, $conn->db);
+
+        if (!$result_certificazione) {
+            die('Errore di inserimento dati : ' . mysql_error());
+        } else {
+
+            $alert= "<p align='center' style='color:red'>Salvataggio effettuato con successo!</p>";
+        }
+		
+		if(isset($alert) && $alert!="")
+		{
+		 echo $alert;	
+		}
+		
+        break;
+}
+//echo isset($alert) ? $alert : '';
+
+// Gestione info database 
+
+if ($cod_user != 0) {
+
+    $sql3_anagrafica = "SELECT 
+							nome, 
+							cognome, 
+							luogo_nascita, 
+							data_nascita, 
+							citta_residenza,
+							indirizzo_residenza,
+							citta_domicilio,
+							indirizzo_domicilio,
+							codice_fiscale FROM anagrafica WHERE user_id=" . $cod_user;
+
+
+    $result3_anagrafica = mysql_query($sql3_anagrafica, $conn->db);
+
+    if (!$result3_anagrafica) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_anagrafica, MYSQL_ASSOC)) {
+            $nome = $row3['nome'];
+            $cognome = $row3['cognome'];
+            $luogo_nascita = $row3['luogo_nascita'];
+            $citta_residenza = $row3['citta_residenza'];
+            $indirizzo_res = $row3['indirizzo_residenza'];
+            $data_nascita = $row3['data_nascita'];
+            $citta_domicilio = $row3['citta_domicilio'];
+            $indirizzo_dom = $row3['indirizzo_domicilio'];
+            $codice_fiscale = $row3['codice_fiscale'];
+        }
+    }
+    $data_nascita = @explode('-', $data_nascita);
+}
+//------
+
+if ($cod_anagr != 0) {
+    $sql3_formazione = "SELECT 
+							istituto, 
+							da, 
+							a, 
+							titolo,
+							corso,
+							voto,
+							descrizione,
+							esperienza_estera FROM formazione WHERE user_id=" . $cod_anagr;
+
+
+    $result3_formazione = mysql_query($sql3_formazione, $conn->db);
+
+    if (!$result3_formazione) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_formazione, MYSQL_ASSOC)) {
+            $istituto = $row3['istituto'];
+            $da_formazione = $row3['da'];
+            $a_formazione = $row3['a'];
+            $titolo = $row3['titolo'];
+            $corso = $row3['corso'];
+            $voto = $row3['voto'];
+            $descrizione = $row3['descrizione'];
+            $esperienza_estera = $row3['esperienza_estera'];
+        }
+
+        $da_formazione = @explode('-', $da_formazione);
+        $a_formazione = @explode('-', $a_formazione);
+    }
+// ----------------------------------------------------------------------------
+    $sql3_esperienza = "SELECT 
+							azienda, 
+							indirizzo, 
+							mansione, 
+							da, 
+							a, 
+							attuale,
+							note FROM esperienza WHERE user_id=" . $cod_anagr;
+
+
+    $result3_esperienza = mysql_query($sql3_esperienza, $conn->db);
+
+    if (!$result3_esperienza) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_esperienza, MYSQL_ASSOC)) {
+            $azienda = $row3['azienda'];
+            $indirizzo = $row3['indirizzo'];
+            $mansione = $row3['mansione'];
+            $da_esperienza = $row3['da'];
+            $a_esperienza = $row3['a'];
+            $attuale = $row3['attuale'];
+            $note = $row3['note'];
+        }
+
+        $da_esperienza = @explode('-', $da_esperienza);
+        $a_esperienza = @explode('-', $a_esperienza);
+    }
+//----------------------------------------------------------------------------
+    $sql3_conoscenze = "SELECT 
+							tipologia,
+							descrizione,
+							livello FROM conoscenze WHERE user_id=" . $cod_anagr;
+
+
+    $result3_conoscenze = mysql_query($sql3_conoscenze, $conn->db);
+
+    if (!$result3_conoscenze) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_conoscenze, MYSQL_ASSOC)) {
+            $tipologia = $row3['tipologia'];
+            $descrizione = $row3['descrizione'];
+            $livello = $row3['livello'];
+        }
+    }
+//----------------------------------------------------------------------------
+    $sql3_certificazione = "SELECT 
+							titolo_certificazione, 
+							ente_certificante,
+							cod_licenza,
+							url,
+							da, 
+							a FROM certificazione WHERE user_id=" . $cod_anagr;
+
+
+    $result3_certificazione = mysql_query($sql3_certificazione, $conn->db);
+
+    if (!$result3_certificazione) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_certificazione, MYSQL_ASSOC)) {
+            $titolo_certificazione = $row3['titolo_certificazione'];
+            $ente_certificante = $row3['ente_certificante'];
+            $cod_licenza = $row3['cod_licenza'];
+            $url = $row3['url'];
+            $da_certificazione = $row3['da'];
+            $a_certificazione = $row3['a'];
+        }
+
+        $da_certificazione = @explode('-', $da_certificazione);
+        $a_certificazione = @explode('-', $a_certificazione);
+    }
+}
+?>
+
+<!-- INIZIO CODICE HTML -->
+
+<!doctype html>
+<html class="">
+
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Anagrafica</title>
+        <link href="css/boilerplate.css" rel="stylesheet" type="text/css">
+        <link href="css/fastdata.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+ <style type="text/css">
+.btn {
+  background: #fff;
+  background-image: -webkit-linear-gradient(top, #6b6969, #eef0ed);
+  background-image: -moz-linear-gradient(top, #6b6969, #eef0ed);
+  background-image: -ms-linear-gradient(top, #6b6969, #eef0ed);
+  background-image: -o-linear-gradient(top, #6b6969, #eef0ed);
+  background-image: linear-gradient(to bottom, #6b6969, #eef0ed);
+  -webkit-border-radius: 5;
+  -moz-border-radius: 5;
+  border-radius: 5px;
+  font-family: Georgia;
+  color:#FFF; 
+  font-size: 15px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  height:30px;
+  line-height:5px;
+ 
+}
+
+
+.btn2 {
+  background: #fff;
+  background-image: -webkit-linear-gradient(top, #e0e0e0, #b3b3b3);
+  background-image: -moz-linear-gradient(top, #e0e0e0, #b3b3b3);
+  background-image: -ms-linear-gradient(top, #e0e0e0, #b3b3b3);
+  background-image: -o-linear-gradient(top, #e0e0e0, #b3b3b3);
+  background-image: linear-gradient(to bottom, #e0e0e0, #b3b3b3);
+  -webkit-border-radius: 5;
+  -moz-border-radius: 5;
+  border-radius: 5px;
+  font-family: Georgia;
+  color:#FFF; 
+  font-size: 15px;
+  padding: 10px 10px 10px 10px;
+  text-decoration: none;
+  height:30px;
+  line-height:5px;
+  width:100px;
+}
+
+
+.btn2:hover {
+  background: #e0e0e0;
+  background-image: -webkit-linear-gradient(top, #a8a5a5, #050505);
+  background-image: -moz-linear-gradient(top, #a8a5a5, #050505);
+  background-image: -ms-linear-gradient(top, #a8a5a5, #050505);
+  background-image: -o-linear-gradient(top, #a8a5a5, #050505);
+  background-image: linear-gradient(to bottom, #a8a5a5, #050505);
+  text-decoration: none;
+  color:#FFF;
+}
+.btn3 {
+  background: #fff;
+  background-image: -webkit-linear-gradient(top, #DF0F0F, #c91a1a);
+  background-image: -moz-linear-gradient(top, #DF0F0F, #c91a1a);
+  background-image: -ms-linear-gradient(top, #DF0F0F, #c91a1a);
+  background-image: -o-linear-gradient(top, #DF0F0F, #c91a1a);
+  background-image: linear-gradient(top bottom, #DF0F0F, #c91a1a);
+  -webkit-border-radius: 5;
+  -moz-border-radius: 5;
+  border-radius: 5px;
+  font-family: Georgia;
+  color:#000; 
+  font-size: 15px;
+  padding: 10px 10px 10px 10px;
+  text-decoration: none;
+  height:10px;
+  line-height:0px;
+}
+
+</style>
+        <script language="javascript" type="text/javascript" src="css/datetimepicker.js"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script language="javascript"> 
+    function toggleMe1(obj, a){ 
+      var e=document.getElementById(a); 
+      if(obj=="Altro"){ 
+        e.style.display="block"; 
+      }else{ 
+    e.style.display="none"; 
+} 
+    } 
+</script> 
+<script language="javascript"> 
+    function toggleMe(obj, a){ 
+      var e=document.getElementById(a); 
+      if(obj=="Si"){ 
+        e.style.display="none"; 
+      }else{ 
+    e.style.display="block"; 
+} 
+    } 
+</script> 
+  <script type="text/javascript">
+function comparsa_cor() {if (document.getElementById("add_cor").style.display=="none"){ document.getElementById("add_cor").style.display="inline";} else {document.getElementById("add_cor").style.display="none";} }
+</script>
+   <script type="text/javascript">
+function comparsa_data1(a) {if (document.getElementById(a).style.display=="none"){ document.getElementById(a).style.display="inline";} else {document.getElementById(a).style.display="none";} }
+</script>
+   <script type="text/javascript">
+function comparsa_data() {if (document.getElementById("data_a").style.display=="none"){ document.getElementById("data_a").style.display="inline";} else {document.getElementById("data_a").style.display="none";} }
+</script>
+        <script type="text/javascript">
+function comparsa_cer() {if (document.getElementById("add").style.display=="none"){ document.getElementById("add").style.display="inline";} else {document.getElementById("add").style.display="none";} }
+</script>
+<script type="text/javascript">
+function comparsa() {if (document.getElementById("add_con").style.display=="none"){ document.getElementById("add_con").style.display="inline";} else {document.getElementById("add_con").style.display="none";} }
+</script>
+<script type="text/javascript">
+function comparsa_esp() {if (document.getElementById("esperienza_form").style.display=="none"){ document.getElementById("esperienza_form").style.display="inline";} else {document.getElementById("esperienza_form").style.display="none";} }
+</script>
+<script type="text/javascript">
+function comparsa_form() {if (document.getElementById("formazione_form").style.display=="none"){ document.getElementById("formazione_form").style.display="inline";} else {document.getElementById("formazione_form").style.display="none";} }
+</script>
+    </head>
+    <body>
+    <?php
+if (isset($_SESSION['logged'])) { ?>
+    <center><input type="button" value="Logout" onclick="window.location = 'logout.php'" class="btn3"></center><br>
+<center>
+<input type="button" value="Torna al Riepilogo" onclick="window.location = 'riepilogo.php'" class="btn2">
+<?php } ?>
+    <div id="header">
+    </div></div></div></div>
+
+
+<!-- INIZIO ANAGRAFICA ----------------------------------------------------------------------------------------------------------------------------------------------  -->
+
+<div id="default">
+    <div><h3><img src="img/anagrafica.png">anagrafica</h3></div>
+    <center>
+    <?php
+if (isset($_SESSION['logged'])) {
+    ?>
+        <div id="div_anagrafica">
+            <form method="post" action="?"> 
+
+                <div class="section group">
+                    <div class="col span_1_of_4">
+                        Nome:<br>
+                        
+                        <input type="nome" name="nome"  style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['nome']) OR isset($nome)) ? $nome : 'Nome'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_4">
+                        Cognome:<br>
+                        <input type="nome" name="cognome" maxlength="20" style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['cognome']) || isset($cognome)) ? $cognome : 'Cognome'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_4">	
+                        Città di residenza:<br>
+                           <input type="nome" name="citta_residenza"  style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['citta_residenza']) || isset($citta_residenza)) ? $citta_residenza : 'Citta di Residenza'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_4">
+                        Indrizzo di residenza:<br>
+                        <input type="nome" name="indirizzo_residenza"  style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['indirizzo_residenza']) || isset($indirizzo_res)) ? $indirizzo_res : 'Indirizzo residenza'; ?>">
+                    </div>
+
+                </div>
+                <div class="section group">
+
+                    <div class="col span_1_of_5" >
+                        Data Nascita:<br>
+                        
+                        <select name="giorno_anagrafica" style="margin-top:8px;">
+                           <?php for($d=1;$d<=31;$d++)
+ {
+	 ?>
+                            <option <?php  if($data_nascita[2] == $d) { ?>selected="selected" <?php } ?> value="<?php echo $d; ?>"><?php echo $d; ?></option>
+                            <?php 
+ }
+ 
+ ?>
+                        </select>
+                        
+                        <select name="mese_anagrafica" style="margin-top:8px;">
+                            <option <?php if($data_nascita[1] == "01") { ?>selected="selected" <?php } ?> value="01">Gennaio</option>
+                            <option <?php if($data_nascita[1] == "02") { ?>selected="selected" <?php } ?> value="02">Febbraio</option>
+                            <option <?php if($data_nascita[1] == "03") { ?>selected="selected" <?php } ?>value="03">Marzo</option>
+                            <option <?php if($data_nascita[1] == "04") { ?>selected="selected" <?php } ?>value="04">Aprile</option>
+                            <option <?php if($data_nascita[1] == "05") { ?>selected="selected" <?php } ?>value="05">Maggio</option>
+                            <option <?php if($data_nascita[1] == "06") { ?>selected="selected" <?php } ?>value="06">Giugno</option>
+                            <option <?php if($data_nascita[1] == "07") { ?>selected="selected" <?php } ?>value="07">Luglio</option>
+                            <option <?php if($data_nascita[1] == "08") { ?>selected="selected" <?php } ?>value="08">Agosto</option>
+                            <option <?php if($data_nascita[1] == "09") { ?>selected="selected" <?php } ?>value="09">Settembre</option>
+                            <option <?php if($data_nascita[1] == "10") { ?>selected="selected" <?php } ?>value="10">Ottobre</option>
+                            <option <?php if($data_nascita[1] == "11") { ?>selected="selected" <?php } ?>value="11">Novembre</option>
+                            <option <?php if($data_nascita[1] == "12") { ?>selected="selected" <?php } ?>value="12">Dicembre</option>
+                        </select>
+
+                        
+                        <select name="anno_anagrafica" style="margin-top:8px;">
+                          
+                     <?php for($y=date("Y");$y>=1930;$y--)
+ {
+	 ?>
+                            <option <?php if($data_nascita[0] == $y) { ?>selected="selected" <?php } ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
+                            <?php 
+ }
+ 
+ ?>
+                                      </select>
+                    </div>
+
+                    <div class="col span_1_of_5">
+                        Luogo di nascita:<br>
+                        <input type="nome" name="luogo_nascita" style="margin-top:8px;"
+                               value="<?php echo (isset($_REQUEST['luogo_nascita']) || isset($luogo_nascita)) ? $luogo_nascita : 'Luogo di nascita'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_5">
+                        Città domicilio:<br>
+                        <input type="nome" name="citta_domicilio"  style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['citta_domicilio']) || isset($citta_domicilio)) ? $citta_domicilio : 'Citta di Domicilio'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_5">
+                        Indrizzo domicilio:<br>
+                        <input type="nome" name="indirizzo_domicilio" style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['indirizzo_domicilio']) || isset($indirizzo_dom)) ? $indirizzo_dom : 'Indirizzo domicilio'; ?>">
+                    </div>
+
+                    <div class="col span_1_of_5" style="alignment-adjust:left; text-align:central;">
+                        Codice Fiscale<br>
+                        <input type="nome" name="codice_fiscale" maxlength="16" style="margin-top:8px;" 
+                               value="<?php echo (isset($_REQUEST['codice_fiscale']) || isset($codice_fiscale)) ? $codice_fiscale : 'Codice fiscale'; ?>">
+                    </div>
+                </div>
+
+                <div id="tfbutton2" style="margin-top:8px; margin-bottom:8px;">
+                    <input type="submit" name="action" value="Aggiorna Anagrafica" class="tfbutton2">
+                </div>
+            </form> 
+    <form action="" method="post" enctype="multipart/form-data">
+    Carica un'immagine profilo per il CV:
+    <input type="hidden" name="id_cv" value="<?php echo $cod_anagr;?>">
+    <input type="file" style="height:16px;" name="fileToUpload" id="fileToUpload">
+    <input type="submit" style="height:20px;" value="Carica Immagine" name="submit">
+    </form>
+        </div>
+    </center>	
+</div> 
+
+<!--  FORMAZIONE
+----------------------------------------------------------------------------------------------------------------------------------------  -->
+
+<?php include '/var/www/html/form/sezioni_anagrafica/formazione.php'; ?>
+
+<!--  ESPERIENZA PROF. ----------------------------------------------------------------------------------------------------------------------------------------  -->
+
+<?php include '/var/www/html/form/sezioni_anagrafica/esperienze.php'; ?>
+
+<!--  CERTIFICAZIONI  ----------------------------------------------------------------------------------------------------------------------------------------  -->
+
+<?php include '/var/www/html/form/sezioni_anagrafica/certificazioni.php'; ?>
+   
+<!--  CONOSCENZE ----------------------------------------------------------------------------------------------------------------------------------------------  -->  
+ <?php include '/var/www/html/form/sezioni_anagrafica/conoscenze.php'; ?>
+<!--  CORSI ----------------------------------------------------------------------------------------------------------------------------------------------  -->  
+ <?php include '/var/www/html/form/sezioni_anagrafica/corsi.php'; ?>
+</div>
+    </div>
+
+</div>
+<?php 
+} else {
+
+    echo "<p align='center' style='color:red'>Per accedere alla pagina devi effettuare il <a href='/servicetech/login.htm.php'>login</a></p>";
+}
+
+?>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!--CONTENUTO PRINCIPALE-->
+	  <section class="">
+	  <div class="panel panel-primary" style="margin-bottom:5%;">
+            <div class="calendar-heading">
+			<div style="padding-left:1%;padding-right:2%;">
+			<span class="legenda-title">Nuovo Utente</span>
+			<a href="#">
+			<span class="legenda-title">
+			<i class="fa fa-chevron-circle-left fa-2x" style="float:right;margin-top:-0.5%;"></i>
+			</span>
+			</a>
+			</div>
+			</div>
+
+ <div class="panel-body">
+   <form action="" method="post">
+      <table class="table table-striped table-advance table-hover" style="margin-top:1%;">
+         <tbody>
+            <tr>
+               <td class="td-intestazione">NOME*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">COGNOME*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">DATA DI NASCITA</td>
+               <td>
+                  <div style="width:50%;" id="datepicker" class="input-group date" data-date-format="mm-dd-yyyy">
+                     <input class="form-control" id="datetimepicker" name="date_of_birthday" placeholder="gg/mm/aaaa" type="text" value="">
+                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                  </div>
+                 
+				 <!-- QUESTO SCRIPT DA PROBLEMI SUL RESPONSIVE
+				 
+				 <script type="text/javascript">
+                     $(function () {
+                     $("#datepicker").datepicker({ 
+                     autoclose: true, 
+                     todayHighlight: true,
+                     format: 'dd/mm/yyyy'
+                     });
+                     });              
+                  </script> -->
+				  
+               </td>
+            </tr>
+            <tr>
+			<tr>
+               <td class="td-intestazione">CITTA' RESIDENZA</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="city_of_residence" value=""></td>
+            </tr>
+               <td class="td-intestazione">INDIRIZZO RESIDENZA</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="address_of_residence" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">INDIRIZZO DOMICILIO</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="address_of_domicile" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">EMAIL*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="email" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">CODICE FISCALE</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="fiscal_code" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">GRUPPI E PROFILI</td>
+			   <td>
+			   <strong>ST:</strong>
+			   <select name="ST" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+			<tr>
+               <td class="td-intestazione"></td>
+			   <td>
+			   <strong>UFFICIO:</strong>
+			   <select name="ufficio" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+			<tr>
+               <td class="td-intestazione"></td>
+			   <td>
+			   <strong>ESTERNI:</strong>
+			   <select name="esterni" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+			<tr>
+               <td class="td-intestazione"></td>
+			   <td>
+			   <strong>TECNICI:</strong>
+			   <select name="tecnici" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+			<tr>
+               <td class="td-intestazione"></td>
+			   <td>
+			   <strong>SW TEAM:</strong>
+			   <select name="sw-team" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+			<tr>
+               <td class="td-intestazione"></td>
+			   <td>
+			   <strong>RESPONSABILI:</strong>
+			   <select name="responsabili" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Non Appartiene</option>
+                   <option value="1">Admin</option>
+                   <option value="2">Responsabile</option>
+                   <option value="3">Editore</option>
+                   <option value="4">Utente</option>
+				   <option value="5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+			
+            <!-- Pulsante Modifica -->
+            <tr>
+              <td colspan="2" style="text-align:left;">
+              <button type="submit" name="" class="btn btn-success btn-sm">
+              <i class="fa fa-plus"></i>&nbsp;Aggiungi Dipendente
+              </button>                                 
+              </td>
+              </tr>
+         </tbody>
+      </table>
+   </form>
+   </div>
+</div>
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->

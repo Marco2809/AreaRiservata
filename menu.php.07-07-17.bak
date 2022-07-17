@@ -1,0 +1,186 @@
+<!-- **********************************************************************************************************************************************************
+     BARRA IN ALTO E NOTIFICHE
+      *********************************************************************************************************************************************************** -->
+      <!--INIZIO HEADER-->
+      <header class="header black-bg">
+              <div class="sidebar-toggle-box">
+                  <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Mostra/Nascondi Menù"></div>
+              </div>
+            <!--INIZIO LOGO-->
+            <a href="home.html" class="logo">
+			<b><img src="assets/img/logo.png" style="width:100%;"></b></a>
+            <!--FINE LOGO-->
+            <div class="nav notify-row" id="top_menu">
+                <!--  INIZIO NOTIFICHE -->
+                <ul class="nav top-menu">
+                    <!-- FINE NOTIFICHE  -->
+
+                    <!--IMPOSTAZIONI FINE-->
+                    <!-- INIZIO UNREAD MESSAGGI-->
+                    <?php
+                            $database = new Database();
+                                        $conn = $database->dbConnection();
+                            //$sql= "SELECT m.id_messaggio as id_mex, m.titolo, a.nome, a.cognome, m.data_creazione FROM messaggi as m, anagrafica as a, message_groups as mg, user_groups as ug, read_messages as rm WHERE (m.id_autore='".$_SESSION['user_idd']."' OR (ug.id_user = '".$_SESSION['user_idd']."' AND (ug.id_gruppo = mg.id_gruppo OR mg.id_destinatario = '".$_SESSION['user_idd']."' ) AND mg.id_messaggio = m.id_messaggio)) AND m.id_autore = a.user_id AND (rm.id_messaggio = m.id_messaggio AND rm.stato=0) GROUP BY m.id_messaggio ORDER BY m.id_messaggio DESC LIMIT 0,5";
+$sql= "SELECT m.id_messaggio as id_mex, m.titolo,m.testo, m.id_autore, m.data_creazione,a.nome,a.cognome FROM messaggi as m, anagrafica as a, message_groups as mg, user_groups as ug,read_messages as rm  WHERE (m.id_autore='".$_SESSION['user_idd']."' OR ((ug.id_user = '".$_SESSION['user_idd']."' AND ug.id_gruppo = mg.id_gruppo AND mg.id_messaggio = m.id_messaggio) OR (mg.id_destinatario = '".$_SESSION['user_idd']."' AND mg.id_messaggio = m.id_messaggio))) AND m.id_autore = a.user_id AND (rm.id_messaggio = m.id_messaggio AND ug.id_user = rm.id_user AND rm.stato=0) GROUP BY id_mex ORDER BY id_mex DESC LIMIT 0,5";    
+//echo $sql;
+//echo $sql;       
+                            $result = $conn->query($sql);
+                            $num = $result->num_rows;
+                                        
+                            ?>
+                    <li id="header_inbox_bar" class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php">
+                            <i class="fa fa-envelope-o"></i>
+                            <?php if($num>0){?><span class="badge notify"><?php echo $num;?></span><?php } ?>
+                        </a>
+                        <ul class="dropdown-menu extended inbox">
+                            <div class="notify-arrow notify-arrow-green"></div>
+                            
+                            <li>
+                                <p class="green">
+                                   
+                                    Ci sono <?php echo $num;?> nuovi messaggi</p>
+                            </li>
+                            
+                            <?php 
+                            
+                            function delta_tempo ($data_iniziale,$data_finale,$unita) {
+
+ $data1 = strtotime($data_iniziale);
+ $data2 = strtotime($data_finale);
+
+	switch($unita) {
+		case "m": $unita = 1/60; break; 	//MINUTI
+		case "h": $unita = 1; break;		//ORE
+		case "g": $unita = 24; break;		//GIORNI
+		case "a": $unita = 8760; break;         //ANNI
+	}
+
+ $differenza = (($data2-$data1)/3600)/$unita;
+ return $differenza;
+}
+                            
+                            while($obj_read = $result->fetch_object()){
+                              $time = delta_tempo($obj_read->data_creazione, date("Y-m-d H:i:s"), "m");
+                               $type="min";
+                              if($time>=1) $time = (int)$time;
+                              else { $time = $time*60; $type="sec";}
+                             
+                              if($time>60&&$type=="min"){
+                                  $time=$time/60;
+                                    $type= "ore";
+                                    $time = (int)$time;
+                              }
+                              if($time>24&&$type=="ore") {
+                                  $time=$time/24;
+                                    $type= "giorni";
+                                    $time = (int)$time;
+                              }
+                              if($time>30&&$type=="giorni") {
+                                  $time=$time/30;
+                                    $type= "mesi";
+                                    $time = (int)$time;
+                              }
+                              
+                              
+                                ?>
+                            <li>
+                                <a href="bacheca.php?id=<?php echo $obj_read->id_mex;?>">
+                                    <span class="photo"><img alt="avatar" style="max-width:80px;" src="assets/img/avatar/profilo.png"></span>
+                                    <span class="subject">
+                                    <span class="from"><?php echo $obj_read->titolo;?></span><br>
+                                    <span class="time"><?php echo $time ." ".$type ." fa"?></span>
+                                    </span>
+                                    <span class="message">
+                                       <?php echo "da ". $obj_read->nome . " ".$obj_read->cognome;?>
+                                    </span>
+                                </a>
+                            </li>
+                            <?php } ?>
+                            <li>
+                                <a href="bacheca.php?view=all_messages">Vedi tutti i messaggi</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- FINE DROPDOWN MESSAGGI -->
+                </ul>
+                <!--  FINE NOTIFICHE -->
+            </div>
+            <div class="top-menu">
+            	<ul class="nav pull-right top-menu">
+                    <li><a class="logout" href="logout.php" >Logout</a></li>
+            	</ul>
+            </div>
+        </header>
+      <!--FINE HEADER-->
+      
+      <!-- **********************************************************************************************************************************************************
+      SIDEBAR MENU
+      *********************************************************************************************************************************************************** -->
+      <!--INIZIO SIDEBAR-->
+      <aside>
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- INIZIO SIDEBAR MENU-->
+              <ul class="sidebar-menu" id="nav-accordion">
+              
+              	  <p class="centered"><a href="riepilogo.php?id=<?php echo $_SESSION['user_idd'];?>"><img src="assets/img/avatar/profilo.png" class="img-circle" width="60"></a></p>
+              	  <h5 class="centered"><?php echo $_SESSION['name'] . " " .$_SESSION['surname'];?></h5>
+              	
+                   <li class="mt">
+                       <a <?php if($_SERVER['PHP_SELF']=="/new_area_riservata/dashboard.php") { ?> class="active"<?php } ?> href="dashboard.php">
+                          <i class="fa fa-home"></i>
+                          <span>Home</span>
+                      </a>
+                  </li>
+                   				  
+                  <li class="mt">
+                     
+                      <a <?php if($_SERVER['PHP_SELF']=="/new_area_riservata/bacheca.php") { ?> class="active"<?php } ?> href="bacheca.php">
+                          <i class="fa fa-dashboard"></i>
+                          <span>Bacheca</span>
+                      </a>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a <?php if($_SERVER['PHP_SELF']=="/new_area_riservata/riepilogo.php") { ?> class="active"<?php } ?> href="javascript:;" >
+                          <i class="fa fa-user"></i>
+                          <span>Profilo</span>
+                      </a>
+                      <ul class="sub">
+                          <li><a  href="riepilogo.php?id=<?php echo $_SESSION['user_idd'];?>">Riepilogo</a></li>
+                          <li><a  href="questionario.php?id=<?php echo $_SESSION['user_idd'];?>">Questionario</a></li>
+                          <li><a  href="anagrafica.php?id=<?php echo $_SESSION['user_idd'];?>">Anagrafica</a></li>
+						  <li><a  href="esperienza.php?id=<?php echo $_SESSION['user_idd'];?>">Esperienza</a></li>
+						  <li><a  href="istruzione.php?id=<?php echo $_SESSION['user_idd'];?>">Istruzione</a></li>
+                                                  <li><a  href="lingue_straniere.php?id=<?php echo $_SESSION['user_idd'];?>">Lingue Straniere</a></li>
+                                                  <li><a  href="certificazioni.php?id=<?php echo $_SESSION['user_idd'];?>">Certificazioni</a></li>
+                                                  <li><a  href="riepilogo_competenze.php?id=<?php echo $_SESSION['user_idd'];?>">Riepilogo competenze</a></li>
+                      </ul>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a <?php if($_SERVER['PHP_SELF']=="/new_area_riservata/timesheet.php") { ?> class="active"<?php } ?> href="timesheet.php?id=<?php echo $_SESSION['user_idd'];?>" >
+                          <i class="fa fa-calendar"></i>
+                          <span>Timesheet</span>
+                      </a>
+                  </li>
+<?php if(isset($_SESSION['is_admin'])&&$_SESSION['is_admin']==1){?>
+                  <li class="sub-menu">
+                      <a <?php if($_SERVER['PHP_SELF']=="/new_area_riservata/amministrazione.php") { ?> class="active"<?php } ?> href="amministrazione.php?action=new" >
+                          <i class="fa fa-lock"></i>
+                          <span>Amministrazione</span>
+                      </a>
+                  </li>
+<?php } ?>
+                  <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-rocket"></i>
+                          <span>Responsabile</span>
+                      </a>
+                  </li>
+
+              </ul>
+              <!-- FINE SIDEBAR MENU-->
+          </div>
+      </aside>
+      <!--FINE SIDEBAR-->

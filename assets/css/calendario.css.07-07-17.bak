@@ -1,0 +1,134 @@
+.calendar-container {
+	margin-top:2%;
+	max-width:90%;
+	height:auto;
+	padding:0;
+	
+}
+
+.mese-title {
+   font-size:25px;
+   font-weight:800;
+   color:#fff;  
+}
+
+.legenda-title {
+   font-size:18px;
+   font-weight:800;
+   color:#fff;
+   text-align:left;   
+}
+
+.calendar-heading {
+   background-color:#FF6B6B;
+   padding-top:1%;  
+   padding-bottom:1%;  
+}
+
+.legenda-heading {
+   background-color:#66CC99;
+   padding-top:1%;  
+   padding-bottom:1%;  
+}
+
+.days-heading {
+   background-color:#66cc99;
+   color:#fff;
+   text-align:center;
+   padding-top:1%;  
+   padding-bottom:1%;  
+}
+
+.arrowdx {
+   color:#fff; 
+   margin-left:2%;
+}
+
+.arrowsx {
+   color:#fff; 
+   margin-right:2%;
+}
+
+.days {
+   font-weight:800;
+   font-size:14px;
+   color:#66cc99; 
+}
+
+.span-day {
+ font-weight:800;
+ font-size:15px;  
+ margin-bottom:5%;
+}
+
+.span-form {
+ font-weight:800;
+ font-size:14px;  
+ text-align:left;
+}
+
+.events {
+margin-bottom:5%;
+}
+
+.aggiungi{
+  color:#357ebd;
+  position:absolute;
+  top:75%;
+  left:80%;
+}
+
+.aggiungi-festivo{
+  color:#fff;
+  position:absolute;
+  top:75%;
+  left:80%;
+}
+
+.festivo{
+  background-color:#FF6B6B;
+  color:#333;
+  position:relative;
+  height: 150px;
+}
+
+.cells{
+  background-color:#fff;
+  height:150px;
+  position:relative;
+}
+
+.no-day{
+  background-color:#fff;
+}
+
+.legenda{
+ font-size:16px;
+}
+
+.panel-height{
+ min-height:350px;
+ position:relative;
+}
+
+.btn-grigio {
+  color: #fff;
+  background-color: #777;
+}
+
+.btn-arancio {
+  color: #fff;
+  background-color: #FF8400;
+}
+
+.btn-verdescuro {
+  color: #fff;
+  background-color: #406C52;
+}
+
+.button-clear {
+  color:#77c803;
+  background-color:transparent;
+  border:none; 
+  outline:none;
+}

@@ -1,0 +1,454 @@
+<?php 
+$contr_el=0;
+if(isset($_POST['elimina_dip'])){
+        
+    $sql_anag_delete="DELETE from anagrafica WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete = mysql_query($sql_anag_delete, $conn->db);
+   
+     $sql_anag_delete1="DELETE from certificazione WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete1 = mysql_query($sql_anag_delete1, $conn->db);
+   
+     $sql_anag_delete2="DELETE from corsi WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete2 = mysql_query($sql_anag_delete2, $conn->db);
+   
+   $sql_anag_delete3="DELETE from esperienza WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete3 = mysql_query($sql_anag_delete3, $conn->db);
+   
+   $sql_anag_delete4="DELETE from formazione WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete4 = mysql_query($sql_anag_delete4, $conn->db);
+  
+   $sql_anag_delete5="DELETE from skill WHERE skill_user_id=".$_GET['id_utente'];
+   $result_sql_anag_delete5 = mysql_query($sql_anag_delete5, $conn->db);
+   
+   $sql_anag_delete6="DELETE from login WHERE user_idd=".$_GET['id_utente'];
+   $result_sql_anag_delete6 = mysql_query($sql_anag_delete6, $conn->db);
+   
+   if (!$sql_anag_delete||!$sql_anag_delete1||!$sql_anag_delete2||!$sql_anag_delete3||!$sql_anag_delete4||!$sql_anag_delete5||!$sql_anag_delete6) {
+        die('Errore di inserimento dati: ' . mysql_error());
+    } else {
+            $alert = "<p align='center' style='color:green'>Profilo eliminato con successo!</p>";
+            $contr_el=1;
+        }
+        
+        if(isset($alert)&&$alert!=""){
+            echo $alert;
+        }
+   
+}
+
+if(isset($_POST['modifica_dip'])){
+
+    $_SESSION['gruppi']="";
+    $gruppi_app="";
+    $query_gruppi="select * from gruppi";
+    $query_gruppi_result=mysql_query($query_gruppi,$conn->db);
+    $con=1;
+    $gruppi='[';
+    while ($row = mysql_fetch_array($query_gruppi_result)){
+        if($row['gruppo']=="SW Team") $row['gruppo']= "SWTeam";
+        if(isset($_REQUEST[$row['gruppo']]) && $_REQUEST[$row['gruppo']] != '') {
+            $group = $_REQUEST[$row['gruppo']];
+          if($group!=0&&$group!=4) $_SESSION['gruppi'].="$con,";
+            if($group!=0) $gruppi_app.="$con,";
+            $gruppi.= '{"gruppo":"'.$con.'","profilo":"'.$group.'"},';
+            $con++;
+        } 
+    }
+    
+    $gruppi_app = substr($gruppi_app,0,  strlen($gruppi_app)-1);
+    $gruppi = substr($gruppi,0,strlen($gruppi)-1);
+    $gruppi.=']';
+    
+        if(isset($_REQUEST['nome']) && $_REQUEST['nome'] != '') {
+            $nome = $_REQUEST['nome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il nome del dipendente!</p>";
+        }
+        
+        if(isset($_REQUEST['cognome']) && $_REQUEST['cognome'] != '') {
+            $cognome = $_REQUEST['cognome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il cognome del dipendente!</p>";
+        }
+        
+         if(isset($_REQUEST['data_nascita']) && $_REQUEST['data_nascita'] != '') {
+            $data_nascita_a = explode("/", $_REQUEST['data_nascita']);
+            $data_nascita= $data_nascita_a[2]."-".$data_nascita_a[1]."-".$data_nascita_a[0];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la data di nascita del dipendente!</p>";
+        }
+        
+         if(isset($_REQUEST['citta_residenza']) && $_REQUEST['citta_residenza'] != '') {
+            $citta_residenza = $_REQUEST['citta_residenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire la citta di residenza del dipendente!</p>";
+        }
+        
+          if(isset($_REQUEST['indirizzo_residenza']) && $_REQUEST['indirizzo_residenza'] != '') {
+            $indirizzo_residenza = $_REQUEST['indirizzo_residenza'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'indirizzo di residenza del dipendente!</p>";
+        }
+        
+           if(isset($_REQUEST['email']) && $_REQUEST['email'] != '') {
+            $email = $_REQUEST['email'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'email del dipendente!</p>";
+        }
+        
+          if(isset($_REQUEST['codice_fiscale']) && $_REQUEST['codice_fiscale'] != '') {
+            $codice_fiscale = $_REQUEST['codice_fiscale'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il codice fiscale del dipendente!</p>";
+        }
+        
+         if(isset($alert)&&$alert!=""){
+            echo $alert;
+        } else {
+        
+    $sql_anag_update="UPDATE anagrafica SET nome = '" . $nome . "', cognome='" .$cognome. "', data_nascita='" .$data_nascita. "',citta_residenza='" .$citta_residenza. "', indirizzo_residenza = '" . $indirizzo_residenza. "', gruppi_utente= '" .$gruppi. "', gruppi_app = '".$gruppi_app."' WHERE user_id=".$_GET['id_utente'];
+   $result_sql_anag_update = mysql_query($sql_anag_update, $conn->db);
+   
+   $sql_login_update="UPDATE login SET email = '" . $email . "' WHERE user_idd=".$_GET['id_utente'];
+   $result_sql_login_update = mysql_query($sql_login_update, $conn->db);
+   
+   if (!$result_sql_anag_update||!$result_sql_login_update) {
+        die('Errore di inserimento dati: ' . mysql_error());
+    } else {
+            $alert = "<p align='center' style='color:green'>Profilo modificato con successo!</p>";
+        }
+        
+        if(isset($alert)&&$alert!=""){
+            echo $alert;
+        }
+   
+}
+}
+
+if(isset($_POST['nuovo_dip'])){
+    $gruppi_app="";
+    $query_gruppi="select * from gruppi";
+    $query_gruppi_result=mysql_query($query_gruppi,$conn->db);
+    $con=1;
+    $gruppi='[';
+    while ($row = mysql_fetch_array($query_gruppi_result)){
+        if($row['gruppo']=="SW Team") $row['gruppo']= "SWTeam";
+        if(isset($_REQUEST[$row['gruppo']]) && $_REQUEST[$row['gruppo']] != '') {
+            $group = $_REQUEST[$row['gruppo']];
+            if($group!=0) $gruppi_app.="$con,";
+            $gruppi.= '{"gruppo":"'.$con.'","profilo":"'.$group.'"},';
+            $con++;
+        } 
+    }
+    $gruppi_app = substr($gruppi_app,0,-1);
+    $gruppi = substr($gruppi,0,-1);
+    $gruppi.=']';
+    //echo $gruppi_app;
+    //echo $gruppi;
+ 
+        if(isset($_REQUEST['nome']) && $_REQUEST['nome'] != '') {
+            $nome = $_REQUEST['nome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il nome del dipendente!</p>";
+        }
+        
+        if(isset($_REQUEST['cognome']) && $_REQUEST['cognome'] != '') {
+            $cognome = $_REQUEST['cognome'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire il cognome del dipendente!</p>";
+        }
+        
+         if(isset($_REQUEST['data_nascita']) && $_REQUEST['data_nascita'] != '') {
+            $data_nascita_a = explode("/", $_REQUEST['data_nascita']);
+            $data_nascita= $data_nascita_a[2]."-".$data_nascita_a[1]."-".$data_nascita_a[0];
+        } else {
+            //$alert .= "<p align='center' style='color:red'>Attenzione: inserire la data di nascita del dipendente!</p>";
+            $data_nascita="";
+            
+        }
+        
+         if(isset($_REQUEST['citta_residenza']) && $_REQUEST['citta_residenza'] != '') {
+            $citta_residenza = $_REQUEST['citta_residenza'];
+        } else {
+            //$alert .= "<p align='center' style='color:red'>Attenzione: inserire la citta di residenza del dipendente!</p>";
+            $citta_residenza="";
+            
+        }
+        
+          if(isset($_REQUEST['indirizzo_residenza']) && $_REQUEST['indirizzo_residenza'] != '') {
+            $indirizzo_residenza = $_REQUEST['indirizzo_residenza'];
+        } else {
+            //$alert .= "<p align='center' style='color:red'>Attenzione: inserire l'indirizzo di residenza del dipendente!</p>";
+            $indirizzo_residenza="";
+            
+        }
+        
+           if(isset($_REQUEST['email']) && $_REQUEST['email'] != '') {
+            $email = $_REQUEST['email'];
+        } else {
+            $alert .= "<p align='center' style='color:red'>Attenzione: inserire l'email del dipendente!</p>";
+        }
+        
+          if(isset($_REQUEST['codice_fiscale']) && $_REQUEST['codice_fiscale'] != '') {
+            $codice_fiscale = $_REQUEST['codice_fiscale'];
+        } else {
+            //$alert .= "<p align='center' style='color:red'>Attenzione: inserire il codice fiscale del dipendente!</p>";
+            $codice_fiscale="";
+            
+        }
+        
+         if(isset($alert)&&$alert!=""){
+            echo $alert;
+        } else {
+        
+  
+   
+   $sql_login_update="INSERT INTO login (email,username,password) VALUES ('" . $email . "','" . $email . "','Iniziale1$$')";
+   $result_sql_login_update = mysql_query($sql_login_update, $conn->db);
+   $ultimo_id= mysql_insert_id();
+   if (!$result_sql_login_update) {
+        die('Errore di inserimento dati: ' . mysql_error());
+    } else {
+        
+          $sql_anag_insert="INSERT INTO anagrafica (user_id,nome,cognome,data_nascita,citta_residenza,indirizzo_residenza,gruppi_utente,gruppi_app,codice_fiscale) 
+        VALUES ($ultimo_id,'" . $nome . "','" .$cognome. "','" .$data_nascita. "','" .$citta_residenza. "','" . $indirizzo_residenza. "','" .$gruppi. "','".$gruppi_app."','".$codice_fiscale."')";
+   $result_sql_anag_update = mysql_query($sql_anag_insert, $conn->db);
+   
+   echo mysql_error();
+            $alert = "<p align='center' style='color:green'>Profilo creato con successo!</p>";
+        }
+        
+        if(isset($alert)&&$alert!=""){
+            echo $alert;
+        }
+   
+}
+}
+$num=0;
+?>
+<div class="ficheaddleft">
+
+            <?php
+        if($_GET['id_utente']!="new"){
+                        $query_time = "select * FROM anagrafica WHERE user_id =".$_GET['id_utente'];
+                        $result_time = mysql_query($query_time, $conn->db);
+        
+if (!$result_time) {
+    die('Errore di inserimento dati: ' . mysql_error());
+} else { if(mysql_num_rows($result_time)==0) $contr_el=1;?>
+    <center>
+        <table width="80%" height="40px"padding="8px">
+            <tr>
+                <td style="text-align: left;"><a href="amministrazione.php" style="margin-left: 0px;"><img style="cursor: pointer;" height="25px" src="img/back.png"></a></td>
+            </tr>
+        </table>
+    <table  class="noborder" width="80%" height="40px"padding="8px" style="margin-top: 10px;">
+        <tbody><tr class="liste_titre">  
+                <th class="liste_titre" colspan="2" style="width:80%"><strong style="font-size:18px; color:#fff; font-family:play; font-weight:bold; margin-left:10px;">Profilo</strong>
+               </th>
+<th class="liste_titre"></th>
+<th class="liste_titre"></th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre" width="20">&nbsp;</th></table></center>  
+    <center>
+              <form action="" method="post">
+        <table align="center" class="noborder" width="80%" height="50px" style="margin-top: -120px;">
+                          <?php 
+                          while ($row = mysql_fetch_array($result_time)) {
+if($row['user_id']!=1 && $row['user_id']!=2 ) {
+        $nome = $row['nome'];
+            $cognome = $row['cognome'];
+            $luogo_nascita = $row['luogo_nascita'];
+            $citta_residenza = $row['citta_residenza'];
+            $indirizzo_res = $row['indirizzo_residenza'];
+            $data_nascita = $row['data_nascita'];
+            $citta_domicilio = $row['citta_domicilio'];
+            $indirizzo_dom = $row['indirizzo_domicilio'];
+            $codice_fiscale = $row['codice_fiscale'];
+            $img_name = $row['img_name'];
+            $profilo_utente=$row['profilo_utente'];
+            $gruppi=$row['gruppi_utente'];
+
+       $sql4_anagrafica = "SELECT 
+							phone, 
+							email,
+                            is_admin
+                                                        FROM login WHERE user_idd=" . $_GET['id_utente'];
+
+
+    $result4_anagrafica = mysql_query($sql4_anagrafica, $conn->db);
+
+    if (!$result4_anagrafica) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row = mysql_fetch_array($result4_anagrafica, MYSQL_ASSOC)) {
+            $telefono = $row['phone'];
+            $email = $row['email'];
+            $is_admin = $row['is_admin'];
+}
+}
+$data_nascita = @explode('-', $data_nascita);
+        ?>
+   
+    <tr class="impair">
+        <td style="width: 40%;font-size:14px; font-family:play; font-weight:bold;text-align: left;">Nome</td>
+<td class="nowrap" style="width: 10%;font-size:14px; font-family:play;text-align: left;"><input type="text" name="nome" value="<?php echo $nome?>"></td><td></td></tr>
+    <tr class="impair">
+<td style="width: 40%;font-size:14px; font-family:play; font-weight:bold;text-align: left;">Cognome</td>
+<td class="nowrap" style="width: 10%;font-size:14px; font-family:play;text-align: left;"><input type="text" name="cognome" value="<?php echo $cognome?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Data di nascita:</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="data_nascita" value="<?php echo $data_nascita[2] . "/" . $data_nascita[1] . "/" . $data_nascita[0] ?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Citta Residenza</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="citta_residenza" value="<?php echo $citta_residenza?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Indirizzo Residenza</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="indirizzo_residenza" value="<?php echo $indirizzo_res?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Email</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="email" value="<?php echo $email?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Codice Fiscale</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="codice_fiscale" value="<?php echo $codice_fiscale;?>"></td><td></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Gruppi e Profili</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;">
+<?php
+$ar = json_decode($gruppi);
+// access first element of $ar array
+$query="select gruppo from gruppi";
+$i=0;
+    $ris_query=mysql_query($query, $conn->db);
+    if(!$ris_query){
+        die('Errore DB: ' . mysql_error());
+} else {
+    while ($row = mysql_fetch_array($ris_query)){
+        $gruppo=$row['gruppo'];
+        $gruppo = str_replace(" ", "", $gruppo);
+        
+    if($i==0) echo $gruppo.": </td>";
+    else echo '<tr><td></td><td class="nowrap" style="font-size:14px; font-family:play;text-align: left; width:100px">'.$gruppo.': </td>';
+    /*
+    if($i==0) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==1) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==2) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==3) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==4) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+     */
+    ?> 
+    <td class="nowrap" style="font-size:14px; font-family:play;text-align: left;">
+    <select name="<?php echo $gruppo;?>">
+        <option <?php if($ar[$i]->profilo=="0"){?> selected="selected"<?php } ?> value="0">Non Appartiene</option>
+        <!--<option <?php if($ar[$i]->profilo=="1"){?> selected="selected"<?php } ?> value="1">Admin</option>-->
+        <option <?php if($ar[$i]->profilo=="2"){?> selected="selected"<?php } ?> value="2">Responsabile</option>
+        <option <?php if($ar[$i]->profilo=="3"){?> selected="selected"<?php } ?> value="3">Editore</option>
+        <option <?php if($ar[$i]->profilo=="4"){?> selected="selected"<?php } ?> value="4">Utente</option>
+        <!--<option <?php if($ar[$i]->profilo=="5"){?> selected="selected"<?php } ?> value="5">HR</option>-->
+    </select>
+    </td>
+    <?php
+    if($i>0) echo "</tr>";
+    $i++;
+    echo "<br>";
+}
+}
+}
+}
+if($contr_el==0) {
+                ?>
+    </td></tr>
+<tr><td colspan="3" style="font-size:16px; font-family:play; font-weight:bold;text-align: left"><input type="submit" style="background-color: #4E5869; color: #fff;" name="modifica_dip" value="Modifica"><input style="background-color: #c91032; color: #fff; margin-left: 50px;" type="submit" name="elimina_dip" value="Elimina"></td>              
+ </tr>
+</tbody></table></center>
+</form>
+        <?php }
+}
+        }else {
+?>
+                    
+    <center>
+        <table width="80%" height="40px"padding="8px">
+            <tr>
+                <td style="text-align: left;"><a href="amministrazione.php" style="margin-left: 0px;"><img style="cursor: pointer;" height="25px" src="img/back.png"></a></td>
+            </tr>
+        </table>
+    <table  class="noborder" width="80%" height="40px"padding="8px" style="margin-top: 10px;">
+        <tbody><tr class="liste_titre">  
+                <th class="liste_titre" colspan="2" style="width:80%"><strong style="font-size:18px; color:#fff; font-family:play; font-weight:bold; margin-left:10px;">Profilo</strong>
+               </th>
+<th class="liste_titre"></th>
+<th class="liste_titre"></th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre" width="20">&nbsp;</th></table></center>  
+    <center>
+              <form action="" method="post">
+        <table align="center" class="noborder" width="80%" height="50px" style="margin-top: -20px;">
+                          
+   
+    <tr class="impair">
+<td style="width: 50%;font-size:14px; font-family:play; font-weight:bold;text-align: left;">Nome*</td>
+<td class="nowrap" style="width: 50%;font-size:14px; font-family:play;text-align: left;"><input type="text" name="nome" value="<?php if(isset($_POST['nome']))echo $_POST['nome'];?>"></td></tr>
+<tr class="impair">
+<td style="width: 50%;font-size:14px; font-family:play; font-weight:bold;text-align: left;">Cognome*</td>
+<td class="nowrap" style="width: 50%;font-size:14px; font-family:play;text-align: left;"><input type="text" name="cognome" value="<?php if(isset($_POST['cognome']))echo $_POST['cognome'];?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Data di nascita (dd/mm/yyyy):</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="data_nascita" value="<?php if(isset($_POST['data_nascita']))echo $_POST['data_nascita'];?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Citta Residenza</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="citta_residenza" value="<?php if(isset($_POST['citta_residenza']))echo $_POST['citta_residenza']?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Indirizzo Residenza</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="indirizzo_residenza" value="<?php if(isset($_POST['indirizzo_res']))echo $_POST['indirizzo_res']?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Email*</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="email" value="<?php if(isset($_POST['email']))echo $_POST['email']?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Codice Fiscale</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;"><input type="text" name="codice_fiscale" value="<?php if(isset($_POST['codice_fiscale']))echo $_POST['codice_fiscale'];?>"></td></tr>
+<tr class="impair">
+<td style="font-size:14px; font-family:play; font-weight:bold;text-align: left;">Gruppi e Profili</td>
+<td class="nowrap" style="font-size:14px; font-family:play;text-align: left;">
+<?php
+
+// access first element of $ar array
+$gruppo="";
+for($i=0;$i<6;$i++){
+     if($i==0) $gruppo = "ST";
+    if($i==1) $gruppo = "Ufficio";
+    if($i==2) $gruppo = "Esterni";
+    if($i==3) $gruppo = "Tecnici";
+    if($i==4) $gruppo = "SWTeam";
+    if($i==5) $gruppo = "Responsabili";
+    echo $gruppo.": ";
+    if($i==0) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==1) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==2) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==3) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    if($i==4) echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    ?> 
+    <select name="<?php echo $gruppo;?>">
+        <option  value="0">Non Appartiene</option>
+        <option value="1">Admin</option>
+        <option  value="2">Responsabile</option>
+        <option  value="3">Editore</option>
+        <option  value="4">Utente</option>
+        <option  value="5">HR</option>
+    </select>
+    <?php
+    echo "<br>";
+}
+
+                ?>
+    </td></tr>
+ <tr><td colspan="2" style="font-size:16px; font-family:play; font-weight:bold;text-align: left;"><input style="background-color: #4E5869; color: #fff;" type="submit" name="nuovo_dip" value="Crea Dipendente"></td>
+               </tr>
+</tbody></table></center>
+</form>
+        <?php } ?>
+                  </div>

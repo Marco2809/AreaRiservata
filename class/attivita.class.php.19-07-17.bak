@@ -1,0 +1,166 @@
+<?php
+session_start();
+require_once('dbconn.php');
+class Attivita
+{
+    public $db;
+    var $id_attivita;
+    var $id_utente;
+    var $data;
+    var $ore;
+    var $tipo;
+    var $timecard;
+    var $stato;
+    var $motivo;
+    
+    public function __construct() {  
+        
+        $database = new Database();
+        $dbconn = $database->dbConnection();
+        $this->db = $dbconn;
+    }
+    
+public function updateAttivita($id_attivita,$ore,$tipo,$timecard){
+     
+    $sql = "UPDATE attivita
+                        
+                           SET 
+                           ore = '" . $ore . "',
+                           tipo = '" .$tipo. "',
+                           timecard = '" .$timecard. "'
+                               
+                           WHERE id_attivita ='" . $id_attivita . "'";
+         
+    $result=$this->db->query($sql);
+         if($result){
+             return 'ok';
+         } else return 'error';
+    }
+    public function setAttivita($id_utente,$data,$ore,$tipo,$timecard){
+        
+      $sql = "INSERT INTO attivita (      id_attivita,
+                                                    id_utente,
+                                                    data,
+                                                    ore,
+                                                    tipo,
+                                                    timecard
+                                                   
+                                                )
+                                        VALUES (        
+                                                                                                NULL,
+                                                '" . $id_utente . "',
+                                                '" . $data . "',
+                                                '" . $ore . "',
+                                                    '" . $tipo . "',
+                                                        '" . $timecard . "'
+                                                )";
+
+
+         $result=$this->db->query($sql);
+         if($result){
+             return 'ok';
+         } else return 'error';
+    }
+    
+     public function delAttivita($id_attivita){
+        
+         $sql="DELETE from attivita WHERE id_attivita = '".$id_attivita."'";
+
+         $result=$this->db->query($sql);
+         if($result){
+
+             return 'ok';
+           
+         } else return 'error';
+    }
+    
+    public function selectHoursByMonth($month) {
+        $outputArray = array();
+        $currentUserArray = array("", "", "", "", "");
+        $statoNonVal = 'Non Validato';
+        
+        // Query per ricavare il totale delle ore (lavorate + non lavorate)
+        $stmt = $this->db->prepare("SELECT attivita.id_utente, anagrafica.nome, "
+                . "anagrafica.cognome, SUM(attivita.ore) AS tot_ore "
+                . "FROM attivita INNER JOIN anagrafica "
+                . "WHERE SUBSTRING(attivita.data, 4, 2) = ? "
+                . "AND attivita.id_utente = anagrafica.user_id "
+                . "GROUP BY attivita.id_utente");
+        $stmt->bind_param('s', $month);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($currentId, $currentName, $currentSurname, $currentTotHours);
+        while($stmt->fetch()) {
+            $currentUserArray[0] = $currentName;
+            $currentUserArray[1] = $currentSurname;
+            $currentUserArray[2] = $currentTotHours;
+            $currentUserArray[5] = $currentId;
+            $outputArray[$currentId] = $currentUserArray;
+        }
+        
+        // Query per ricavare il totale dei giorni
+        $stmt = $this->db->prepare("SELECT id_utente, COUNT(DISTINCT data) AS tot_giorni "
+                . "FROM attivita WHERE SUBSTRING(data, 4, 2) = ? "
+                . "GROUP BY id_utente");
+        $stmt->bind_param('s', $month);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($currentId, $currentTotDays);
+        while($stmt->fetch()) {
+            $outputArray[$currentId][3] = $currentTotDays;
+        }
+        
+        // Query per ricavare l'info sulle attività non validate
+        $stmt = $this->db->prepare("SELECT id_utente, COUNT(id_utente) AS not_valid "
+                . "FROM attivita WHERE SUBSTRING(data, 4, 2) = ? AND stato = ? "
+                . "GROUP BY id_utente");
+        $stmt->bind_param('ss', $month, $statoNonVal);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($currentId, $notValid);
+        while($stmt->fetch()) {
+            $outputArray[$currentId][4] = $notValid;
+        }
+        
+        return $outputArray;
+    }
+    
+    public function getAllPresences() {
+        $outputArray = array();
+        $tipo = 'Presente';
+        $stato = 'Non Validato';
+        $stmt = $this->db->prepare("SELECT attivita.id_attivita, attivita.id_utente, anagrafica.nome, "
+                . "anagrafica.cognome, attivita.data, attivita.ore, attivita.tipo, "
+                . "attivita.timecard FROM attivita INNER JOIN anagrafica "
+                . "ON attivita.id_utente = anagrafica.user_id WHERE attivita.tipo = ? "
+                . "AND attivita.stato = ?");
+        $stmt->bind_param('ss', $tipo, $stato);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($idAtt, $idUser, $nome, $cognome, $data, $ore, 
+                $tipo, $timecard);
+        while($stmt->fetch()) {
+            $currentPresence = array($idAtt, $idUser, $nome, $cognome, $data, $ore, $tipo, $timecard);
+            array_push($outputArray, $currentPresence);
+        }
+        
+        return $outputArray;
+    }
+    
+    function validateActivity($idActivity) {
+        $stato = 'Validato';
+        $stmt = $this->db->prepare("UPDATE attivita SET stato = ? WHERE id_attivita = ?");
+        $stmt->bind_param('si', $stato, $idActivity);
+        $stmt->execute();
+    }
+    
+    function refuseActivity($idActivity) {
+        $stato = 'Rifiutato';
+        $stmt = $this->db->prepare("UPDATE attivita SET stato = ? WHERE id_attivita = ?");
+        $stmt->bind_param('si', $stato, $idActivity);
+        $stmt->execute();
+    }
+    
+}
+
+?>

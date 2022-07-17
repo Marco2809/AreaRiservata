@@ -1,0 +1,131 @@
+<?php
+
+class Commessa {
+    
+    private $id;
+    private $db;
+    private $idResp;
+    private $commessa;
+    private $cliente;
+    private $nomeCommessa;
+    
+    private $idUser;
+    private $idRole;
+    
+    public function __construct() {
+        $this->id = null;
+        $this->idUser = null;
+        $this->idRole = null;
+        $this->idResp = null;
+        $this->commessa = null;
+        $this->cliente = null;
+        $this->nomeCommessa = null;
+        
+        $db = new Database();
+        $this->db = $db->dbConnection();
+    }
+
+public function addTempCommessa($idUser, $idCommessa,$idRole) {
+        $stmtInsert = $this->db->prepare("INSERT INTO commesse_temp (id_user, 
+            id_commessa,id_ruolo) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iii", $idUser, $idCommessa,$idRole);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+    
+    public function addCommessa($idResp, $commessa, $cliente, $nomeCommessa) {
+        $stmtInsert = $this->db->prepare("INSERT INTO commesse (id_responsabile, 
+            commessa, cliente, nome_commessa) VALUES (?, ?, ?, ?)");
+        $stmtInsert->bind_param("isss", $idResp, $commessa, $cliente, $nomeCommessa);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+
+
+ public function insertCommessaFromTemp($idUser,$idAdmin) {
+
+ $sql="SELECT * FROM commesse_temp WHERE id_user=".$idAdmin;
+
+         $result=$this->db->query($sql);
+        
+         if ($result)
+		{
+                                
+				while($objp = $result->fetch_object()){
+              
+        $stmtInsert = $this->db->prepare("INSERT INTO user_commesse (id_commessa, id_user, id_role) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iii", $objp->id_commessa, $idUser, $objp->id_ruolo);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+
+}
+
+}
+
+
+$delete = "DELETE FROM commesse_temp WHERE id_user =". $idAdmin;
+$result = $this->db->query($delete);
+        return $result;
+
+    }
+
+public function delCommessaTemp($idCommessa){
+
+$delete = "DELETE FROM commesse_temp WHERE id_commessa_temp =". $idCommessa;
+$result = $this->db->query($delete);
+        return $result;
+
+
+}
+    
+    public function updateCommessa($idResp, $commessa, $cliente, $nomeCommessa, $idCommessa) {
+        $stmt = $this->db->prepare("UPDATE commesse SET id_responsabile = ?, "
+                . "commessa = ?, cliente = ?, nome_commessa = ? WHERE id_commessa = ?");
+        $stmt->bind_param('isssi', $idResp, $commessa, $cliente, $nomeCommessa, $idCommessa);
+        $stmt->execute();
+    }
+    
+    public function deleteCommessa($idCommessa) {
+        $stmtDelete = $this->db->prepare("DELETE FROM commesse WHERE id_commessa = ?");
+        $stmtDelete->bind_param("i", $idCommessa);
+        if(!$stmtDelete->execute()) {
+            trigger_error("Errore! " . $this->db->error);
+        }
+    }
+    
+    public function createUserCommesse($idCommessa, $idUtente, $idRuolo) {
+        $stmtInsert = $this->db->prepare("INSERT INTO user_commesse (id_commessa,
+                id_user, id_role) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iii", $idCommessa, $idUtente, $idRuolo);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+    
+    public function getAll() {
+        
+        $arrayOutput = array();
+        $result = $this->db->query("SELECT * FROM commesse");
+        if($result) {
+            while($currentJob = $result->fetch_object()) {
+                array_push($arrayOutput, $currentJob);
+            }
+        }
+        return $arrayOutput;
+    }
+    
+}

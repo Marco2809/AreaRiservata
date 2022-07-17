@@ -1,0 +1,66 @@
+<?php
+
+class Commesse {
+    
+    private $id;
+    private $db;
+    private $idResp;
+    private $commessa;
+    private $cliente;
+    private $nomeCommessa;
+    
+    private $idUser;
+    private $idRole;
+    
+    public function __construct() {
+        $this->id = null;
+        $this->idUser = null;
+        $this->idRole = null;
+        $this->idResp = null;
+        $this->commessa = null;
+        $this->cliente = null;
+        $this->nomeCommessa = null;
+        
+        $db = new Database();
+        $this->db = $db->dbConnection();
+    }
+    
+    public function addCommessa() {
+        $stmtInsert = $this->db->prepare("INSERT INTO commesse (id_commessa,
+                id_responsabile, commessa, cliente, nome_commessa) 
+                VALUES (?, ?, ?, ?, ?)");
+        $stmtInsert->bind_param("iii", $this->id, $this->idResp, $this->commessa, 
+                $this->cliente, $this->nomeCommessa);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+    
+    public function createUserCommesse($idCommessa, $idUtente, $idRuolo) {
+        $stmtInsert = $this->db->prepare("INSERT INTO user_commesse (id_commessa,
+                id_user, id_role) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iii", $idCommessa, $idUtente, $idRuolo);
+        $code = $stmtInsert->execute();
+        if(!$code) {
+            trigger_error("Errore! " . $this->db->error, E_USER_WARNING);
+        }
+        $stmtInsert->close();
+        return $code;
+    }
+    
+    public function getAll() {
+        
+        $arrayOutput = array();
+        $result = $this->db->query("SELECT * FROM commesse");
+        if($result) {
+            while($currentJob = $result->fetch_object()) {
+                array_push($arrayOutput, $currentJob);
+            }
+        }
+        return $arrayOutput;
+    }
+    
+}

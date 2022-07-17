@@ -1,0 +1,84 @@
+<?php
+session_start();
+require_once('dbconn.php');
+class Attivita
+{
+    public $db;
+    //variabili tabella esperienza
+    var $id_attivita;
+    var $id_utente;
+    var $data;
+    var $ore;
+    var $tipo;
+    var $timecard;
+    var $stato;
+    var $motivo;
+
+
+    
+    public function __construct() {  
+        
+        $database = new Database();
+        $dbconn = $database->dbConnection();
+        $this->db = $dbconn;
+    }
+    
+public function updateAttivita($id_attivita,$ore,$tipo,$timecard){
+     
+    $sql = "UPDATE attivita
+                        
+                           SET 
+                           ore = '" . $ore . "',
+                           tipo = '" .$tipo. "',
+                           timecard = '" .$timecard. "'
+                               
+                           WHERE id_attivita ='" . $id_attivita . "'";
+         
+    $result=$this->db->query($sql);
+         if($result){
+             return 'ok';
+         } else return 'error';
+    }
+    public function setAttivita($id_utente,$data,$ore,$tipo,$timecard){
+        
+      $sql = "INSERT INTO attivita (      id_attivita,
+                                                    id_utente,
+                                                    data,
+                                                    ore,
+                                                    tipo,
+                                                    timecard
+                                                   
+                                                )
+                                        VALUES (        
+                                                                                                NULL,
+                                                '" . $id_utente . "',
+                                                '" . $data . "',
+                                                '" . $ore . "',
+                                                    '" . $tipo . "',
+                                                        '" . $timecard . "'
+                                                )";
+
+
+         $result=$this->db->query($sql);
+         if($result){
+             return 'ok';
+         } else return 'error';
+    }
+    
+     public function delAttivita($id_attivita){
+        
+         $sql="DELETE from attivita WHERE id_attivita = '".$id_attivita."'";
+
+         $result=$this->db->query($sql);
+         if($result){
+
+             return 'ok';
+           
+         } else return 'error';
+    }
+    
+    
+   
+}
+
+?>

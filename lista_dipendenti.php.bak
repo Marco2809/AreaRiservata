@@ -1,0 +1,134 @@
+<?php 
+$num=0;
+?>
+   
+<form method="post" action="">        
+   <table align="center" width="auto" height="auto" cellspacing="5" style="margin-bottom:0px; margin-top:10px; overflow:auto;">
+  <tbody>
+    <tr>
+        <th>
+          <input id="nome" class="shadows" name="nome" placeholder="nome" type="nome"></strong></th>
+      <th scope="col">
+          <input id="cognome" name="cognome" placeholder="cognome" type="cognome"></strong></th>
+      <th scope="col"><input type="image" title="Cerca" value="Cerca" src="img/cerca.png" name="cerca" style="width: 80px; margin-left: -10px"></th>
+      <th scope="col"><input type="image" title="Visualizza tutti" value="Visualizza tutti" src="img/vis_tutti.png" name="visualizza_dip" style="margin-left:-20px; height: 45px"></th>
+    </tr>
+  </tbody>
+</table>
+    <table align="center" width="auto" height="auto" cellspacing="5">
+        <tr><td><a href="amministrazione.php?id_utente=new"><img src="img/nuovo_dip.png" height="30px"></a></td>
+            <td><a href="amministrazione.php?id_gruppo=adm&gruppo=1"><img src="img/gestione_gruppi.png" height="30px"></td>
+                    <td><a href="amministrazione.php?id=ric"><img src="img/ricerca_cv.png" height="30px"></td>
+         </tr>
+    </table> 
+</form>
+<div class="ficheaddleft">
+
+            <?php
+         if(!isset($_POST['nome'])&&!isset($_POST['cognome'])||isset($_POST['visualizza_dip'])&&$_POST['visualizza_dip']=="Visualizza Tutti")
+                        
+        { 
+             
+                        $query_time = "select * FROM anagrafica WHERE";
+                        for($r=0;$r<count($gruppi_admin);$r++){
+                            
+                            if($r==0) $query_time .= " (gruppi_app LIKE '%".$gruppi_admin[$r]."%'";
+                            else $query_time .= " OR gruppi_app LIKE '%".$gruppi_admin[$r]."%'";
+                              
+                        }
+                        $query_time .= ")"; 
+                        $query_time .= " ORDER BY user_id DESC";
+                        $result_time = mysql_query($query_time, $conn->db);
+        } if(isset($_POST['nome'])&&$_POST['cognome']=="")
+        {
+            
+              $query_time = "select * FROM anagrafica WHERE";
+                        for($r1=0;$r1<count($gruppi_admin);$r1++){
+                            
+                            if($r1==0) $query_time .= " (gruppi_app LIKE '%".$gruppi_admin[$r1]."%'";
+                            else $query_time .= " OR gruppi_app LIKE '%".$gruppi_admin[$r1]."%'";
+                            
+                        }
+                        $query_time .= ")"; 
+                        $query_time .= " AND nome LIKE '%".$_POST['nome']."%' ORDER BY user_id DESC";
+                        $result_time = mysql_query($query_time, $conn->db);
+        }
+        if(isset($_POST['cognome'])&&$_POST['nome']=="")
+        {
+                       
+                            $query_time = "select * FROM anagrafica WHERE";
+                        for($r1=0;$r1<count($gruppi_admin);$r1++){
+                            
+                            if($r1==0) $query_time .= " (gruppi_app LIKE '%".$gruppi_admin[$r1]."%'";
+                            else $query_time .= " OR gruppi_app LIKE '%".$gruppi_admin[$r1]."%'";
+                            
+                        }
+                        $query_time .= ")"; 
+                        $query_time .= " AND cognome LIKE '%".$_POST['cognome']."%' ORDER BY user_id DESC";
+                        $result_time = mysql_query($query_time, $conn->db);
+        }
+if (!$result_time) {
+    die('Errore di inserimento dati: ' . mysql_error());
+} else {?>
+    <center>
+    <table  class="noborder" width="80%" height="40px"padding="8px" style="margin-top: 10px;">
+        <tbody><tr class="liste_titre">  
+                <th class="liste_titre" colspan="2" style="width:80%"><strong style="font-size:18px; color:#fff; font-family:play; font-weight:bold; margin-left:10px;">Lista Dipendenti</strong>
+               </th>
+<th class="liste_titre"></th>
+<th class="liste_titre"></th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre">&nbsp;</th>
+<th class="liste_titre" width="20">&nbsp;</th></table></center>  
+    <center>
+        <table align="center" class="noborder" width="80%" height="50px"padding="px" style="margin-top: -20px;">
+    <tr style="font-size:16px; font-family:play; font-weight:bold;text-align: left;  height: 20px; line-height: 50px; background-color: #999999; color: #fff;">
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left;">Num.</td>
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left;">Foto</td>
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left;">Nome e Cognome</td>
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;">Data di nascita</td>
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;">Citta</td>
+                    <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;">CV</td></tr>
+                          <?php 
+                          while ($row = mysql_fetch_array($result_time)) {
+if($row['user_id']!=1 && $row['user_id']!=3 ) {
+        $user_id = $row['user_id'];
+        $nome = $row['nome'];
+        $cognome = $row['cognome'];
+        $data_nascita = $row['data_nascita'];
+        $luogo_nascita = $row['luogo_nascita'];
+        $data=explode("-",$data_nascita);
+        $num++;
+        $img_name = $row['img_name'];
+        
+        $query_time1 = "select * FROM esperienza WHERE user_id =".$user_id." ORDER BY id_esp DESC LIMIT 1";
+                         $result_time1 = mysql_query($query_time1, $conn->db);
+                  
+       
+if (!$result_time1) {
+    die('Errore di inserimento dati: ' . mysql_error());
+} else {
+    $row1 = mysql_fetch_array($result_time1);
+        $area = $row1['area'];
+}
+
+
+        ?>
+   
+    <tr>
+        <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left; height: 50px; line-height: 50px;"><?php echo $num; ?></td>
+        <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left;height: 50px; line-height: 50px;"><?php if($img_name==0){?><img  src="img/dipendente.png"><?php } else {?><img style="max-height: 50px;" src="img/CV/<?php echo $img_name;?>"><?php }?></td>
+        <td style="font-size:16px; font-family:play; font-weight:bold;text-align: left;height: 50px; line-height: 50px;"><a style="text-decoration: underline; color: black;" href="amministrazione.php?id_utente=<?php echo $user_id?>"><?php echo $cognome . " " .$nome ?></a></td>
+        <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;height: 50px; line-height: 50px;"><a style="text-decoration: underline; color: black;" href="amministrazione.php?id_utente=<?php echo $user_id?>"><?php echo $data[2]."/".$data[1]."/".$data[0]; ?></a></td>
+         <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;height: 50px; line-height: 50px;"><a style="text-decoration: none; color: black;" href="riepilogo.php?id=<?php echo $user_id?>"><?php echo $luogo_nascita ?></a></td>        
+        <td style="font-size:16px; font-family:play; font-weight:bold;text-align: center;height: 50px; line-height: 50px;"><a target="blank" href="././tcpdf/examples/PDF_create.php?id=<?php echo $user_id?>"><img width="30px" src="img/pdf2.png"></a></td>
+        </th></tr> </center>
+<?php
+}
+}
+}
+                ?>
+               </tbody>
+</table>
+                  </div>

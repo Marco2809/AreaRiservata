@@ -1,0 +1,290 @@
+<?php 
+/*echo ini_get('display_errors');
+
+if (!ini_get('display_errors')) {
+    ini_set('display_errors', '1');
+}
+
+echo ini_get('display_errors');
+*/
+if(isset($_REQUEST['add_commessa'])){
+
+$commessa = new Commessa();
+$add_commessa = $commessa->addTempCommessa($_SESSION['user_idd'],$_REQUEST['commessa'],$_REQUEST['commessa_ruolo']);
+
+}
+
+if(isset($_REQUEST['del_commessa'])){
+
+$commessa = new Commessa();
+$del_commessa = $commessa->delCommessaTemp($_REQUEST['id_commessa_temp']);
+
+}
+
+if(isset($_REQUEST['del-dipendente'])){
+
+$user = new User();
+$del_user = $user->delUser($_REQUEST['del-dipendente']);
+echo '<div style="margin-top:10px;" class="alert alert-success" role="alert">
+                            <strong>Ben fatto!</strong> Utente eliminato con successo.
+                        </div>';
+}
+
+
+if(isset($_REQUEST['add_user'])){
+
+ $alert='<div style="margin-top:10px;" class="alert alert-danger" role="alert"><strong>Risolvere i seguenti errori:<br></strong>';
+            $alert_list="";
+            
+            if(isset($_REQUEST['firstname']) && $_REQUEST['firstname'] != '') {
+                $_REQUEST['firstname'] = $_REQUEST['firstname'];
+            } else {
+                $alert_list .= "<br>- Inserire il nome!</p>";
+            }
+              if(isset($_REQUEST['lastname']) && $_REQUEST['lastname'] != '') {
+                $_REQUEST['lastname'] = $_REQUEST['lastname'];
+            } else {
+                 $alert_list .= "<br>- Inserire il cognome!</p>";
+            }
+
+if(isset($_REQUEST['email']) && $_REQUEST['email'] != '') {
+                $_REQUEST['email']= $_REQUEST['email'];
+            } else {
+                 $alert_list .= "<br>- Inserire la mail!</p>";
+            }
+        
+            $alert_end = '</div>';
+
+if($alert_list==""){
+
+$user = new User();
+$id_user = $user->createUser($_REQUEST['email'],$_REQUEST['profile']);
+
+
+$anagrafica = new Anagrafica();
+$insert_anagrafica = $anagrafica->setAnagraficaAdmin($id_user,$_REQUEST['firstname'],$_REQUEST['lastname'],$_REQUEST['date_of_birthday'],$_REQUEST['codice_fiscale']);
+
+
+$group = new Gruppo();
+$insert_group = $group -> createUserGruppi($id_user,$_REQUEST['gruppi']);
+
+$commessa=new Commessa();
+$insert_commessa= $commessa->insertCommessaFromTemp($id_user,$_SESSION['user_idd']);
+
+ echo '<div style="margin-top:10px;" class="alert alert-success" role="alert">
+                            <strong>Ben fatto!</strong> Utente creato con successo.
+                        </div>';
+
+} else {
+
+                echo $alert.$alert_list.$alert_end;
+
+            }   
+
+
+
+}
+
+?>
+<!--CONTENUTO PRINCIPALE-->
+	  <section class="">
+	  <div class="panel panel-primary" style="margin-bottom:5%;">
+            <div class="calendar-heading">
+			<div style="padding-left:1%;padding-right:2%;">
+			<span class="legenda-title">Nuovo Utente</span>
+			<a href="#">
+			<span class="legenda-title">
+			<i class="fa fa-chevron-circle-down fa-2x" style="float:right;margin-top:-0.5%;" onclick="comparsa('body_panel');"></i>
+			</span>
+			</a>
+			</div>
+			</div>
+
+ <div class="panel-body" <?php if(!isset($_REQUEST['add_commessa'])&&!isset($_REQUEST['add_user'])&&!isset($_REQUEST['del_commessa'])) { ?> style="display:none;" <?php } ?> id="body_panel">
+   <form action="" method="post">
+      <table class="table table-striped table-advance table-hover" style="margin-top:1%;">
+         <tbody>
+            <tr>
+               <td class="td-intestazione">NOME*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="firstname" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">COGNOME*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="lastname" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">DATA DI NASCITA</td>
+               <td>
+                  <div style="width:50%;" id="datepicker" class="input-group date" data-date-format="mm-dd-yyyy">
+                     <input class="form-control" id="datetimepicker" name="date_of_birthday" placeholder="gg/mm/aaaa" type="text" value="">
+                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                  </div>
+                 
+				 <!-- QUESTO SCRIPT DA PROBLEMI SUL RESPONSIVE
+				 
+				 <script type="text/javascript">
+                     $(function () {
+                     $("#datepicker").datepicker({ 
+                     autoclose: true, 
+                     todayHighlight: true,
+                     format: 'dd/mm/yyyy'
+                     });
+                     });              
+                  </script> -->
+				  
+               </td>
+            </tr>
+            <tr>
+            <tr>
+               <td class="td-intestazione">EMAIL*</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="email" value=""></td>
+            </tr>
+            <tr>
+               <td class="td-intestazione">CODICE FISCALE</td>
+               <td><input style="width:50%;" class="form-control" type="text" name="codice_fiscale" value=""></td>
+            </tr>
+
+ <tr>
+               <td class="td-intestazione">PROFILO</td>
+               <td><select name="profile" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="0">Utente</option>
+                   <option value="1">Amministratore</option>
+                   <option value="2">Responsabile</option>
+              </select>  </td>
+            </tr>
+<?php 
+
+$sql="SELECT * FROM commesse_temp WHERE id_user=".$_SESSION['user_idd'];
+$result = $conn->query($sql);
+
+if($result->num_rows>0){
+?>
+<tr>
+               <td class="td-intestazione">Commesse:</td>
+               <td>
+<?php while($obj_com= $result->fetch_object()){ ?>
+<form action="" method="post">
+ <?php echo $obj_com->id_commessa; ?>
+<input type="submit" class="btn btn-danger btn-sm" name="del_commessa" value="Elimina">
+<input type="hidden" name="id_commessa_temp" value="<?php echo $obj_com->id_commessa_temp;?>">
+<br>
+</form>
+<?php } ?>
+               </td>
+       </tr>
+<?php } ?>
+<tr >
+               <td class="td-intestazione">Seleziona Commessa:</td>
+               <td colspan="2">
+<form action="" method="post">
+                  <select id="commessa" class="form-control" name="commessa" style="width:25%;margin-top:1%;"> 
+                      <option>Seleziona una commessa...</option>
+<?php        
+    $commessa = new Commessa();
+    $allJobs = $commessa->getAll();
+
+    foreach($allJobs as $job) {
+        echo '<option value="' . $job->id_commessa . '">' . 
+             $job->nome_commessa . '</option>';
+    }
+?>
+              </select> 
+<select id="commessa_ruolo" class="form-control" name="commessa_ruolo" style="width:25%;margin-top:1%;"> 
+<option value="4">Appartiene</option>
+<option value="2">Responsabile</option>
+</select>
+<input type="submit" class="btn btn-success btn-sm" name="add_commessa" value="Aggiungi">
+</form>
+               </td>
+       </tr>
+            <tr>
+               <td class="td-intestazione">GRUPPI E PROFILI</td>
+<?php 
+$num=0;
+$sql="SELECT * FROM gruppi";
+$result= $conn->query($sql);
+ while($obj_gruppi= $result->fetch_object()){
+?>
+<?php if($num>0) { ?><tr> <td class="td-intestazione"></td><?php } $num++;?>
+ 
+<td>
+			   <strong><?php echo $obj_gruppi->gruppo;?></strong>
+                   <select name="gruppi[]" style="width:50%;margin-top:1%;" class="form-control">
+                   <option value="<?php echo $obj_gruppi->id_gruppo;?>-0">Non Appartiene</option>
+                   <option value="<?php echo $obj_gruppi->id_gruppo;?>-1">Admin</option>
+                   <option value="<?php echo $obj_gruppi->id_gruppo;?>-2">Responsabile</option>
+                   <option value="<?php echo $obj_gruppi->id_gruppo;?>-3">Editore</option>
+                   <option value="<?php echo $obj_gruppi->id_gruppo;?>-4">Utente</option>
+		   <option value="<?php echo $obj_gruppi->id_gruppo;?>-5">HR</option>
+              </select>  
+			   </td> 
+            </tr>
+<?php } ?>
+	
+            <!-- Pulsante Modifica -->
+            <tr>
+              <td colspan="2" style="text-align:left;">
+              <button type="submit" name="add_user" class="btn btn-success btn-sm">
+              <i class="fa fa-plus"></i>&nbsp;Aggiungi Dipendente
+              </button>                                 
+              </td>
+              </tr>
+         </tbody>
+      </table>
+   </form>
+   </div>
+</div>
+
+<!--  LISTA DIPENDENTI  -->
+
+<div class="row" style="margin-bottom:5%;">
+<div class="col-md-12">
+<div class="panel panel-primary filterable" style="margin-bottom:5%;">
+  <div class="legenda-heading">
+              <div style="padding-left:2%;padding-right:2%;">
+                      <span class="legenda-title">Lista Dipendenti</span>
+      <div class="pull-right">
+        <button class="btn btn-info btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-search fa-2x"></span>
+<span class="span-title">&nbsp; Cerca</span>
+</button>
+      </div>
+  </div>
+              </div>
+  <table class="table">
+      <thead>
+          <tr class="filters">
+              <th><input type="text" class="form-control" placeholder="Num."></th>
+              <th><input type="text" class="form-control" placeholder="Dipendente"></th>
+              <th><input type="text" class="form-control" placeholder="Data di Nascita"></th>
+              <th><input type="text" class="form-control" placeholder="Azioni"></th>
+          </tr>
+      </thead>
+      <tbody>
+<?php
+
+//<a href="amministrazione.php?action=edit&id='.$dipendente['user_id'].'"><i class="fa fa-pencil fa-2x" style="color:#77c803;"></i></a>
+            $user = new User();
+            $dipendenti = $user->getAll();
+            foreach($dipendenti as $dipendente) {
+                echo '<tr><form action="" method="post">' .
+                     '<td>' . $dipendente['user_id'] . '</td>' .
+                     '<td>' . $dipendente['nome'] . ' ' . $dipendente['cognome'] . '</td>' .
+                     '<td>' . $dipendente['data_nascita'] . '</td>' .
+                     '<td>
+<a target="_blank" href="tcpdf/examples/PDF_create.php?id='.$dipendente['user_id'].'"><i class="fa fa-file-pdf-o fa-2x" style="color:#fd6c6e;"></i></a>
+<button  name="del-dipendente" type="submit" value="' . $dipendente['user_id'] . '"'
+                        . 'style="background-color:transparent; border:none; outline:none;">' . 
+                     '<i class="fa fa-times fa-2x" style="color:#fd6c6e;"></i></button></td>' . 
+                     '</form></tr>';
+            }
+?>
+      </tbody>
+  </table>
+</div>
+</div>		 
+			
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->
+<script type="text/javascript">
+function comparsa(a) {if (document.getElementById(a).style.display=="none"){ document.getElementById(a).style.display="";} else {document.getElementById(a).style.display="none";} }
+</script>

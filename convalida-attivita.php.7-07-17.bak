@@ -1,0 +1,86 @@
+<?php
+
+if(isset($_GET['type'])) {
+    $attivita = new Attivita();
+    switch($_GET['type']) {
+        case 'validate':
+            $attivita->validateActivity($_GET['activity']);
+            break;
+        
+        case 'refuse':
+            $attivita->refuseActivity($_GET['activity']);
+            break;
+    }
+}
+
+?>
+
+<section class="">
+
+	 <div class="row">
+	 <div class="col-md-12">
+        <div class="panel panel-primary filterable" style="margin-bottom:5%;">
+            <div class="calendar-heading">
+			<div style="padding-left:2%;padding-right:2%;">
+				<span class="legenda-title">Attività da validare</span>
+                <div class="pull-right">
+                 <button class="btn btn-info btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-search fa-2x"></span>
+        <span class="span-title">&nbsp; Cerca</span>
+        </button>
+                </div>
+            </div>
+			</div>
+      <div class="panel-body" style="padding-left:2%;padding-right:2%;">
+      <table class="table">
+                <thead>
+                    <tr class="filters">
+                        <th><input type="text" class="form-control" placeholder="Dipendente"></th>
+                        <th><input type="text" class="form-control" placeholder="Commessa"></th>
+                        <th><input type="text" class="form-control" placeholder="Tipo Attività"></th>
+                        <th><input type="text" class="form-control" placeholder="Data"></th>
+                        <th><input type="text" class="form-control" placeholder="Ore"></th>
+                        <th><input type="text" class="form-control" placeholder="Azioni"></th>
+                    </tr>
+                </thead>
+                <tbody>
+<?php
+                        $commesse = new Commessa();
+                        $listaCommesse = $commesse->getCommesseByResponsabile($_SESSION['user_idd']);
+
+                        $attivita = new Attivita();
+                        $listaAttivita = splitActivities($attivita->getAllPresences());
+
+                        foreach($listaAttivita as $attivita) {
+                            foreach($listaCommesse as $commessa) {
+                                if(checkCommessaInAttivita($commessa[0], $attivita)) {
+                                    echo '<tr>
+                                        <td>' . $attivita[2] . ' ' . $attivita[3] . '</td>
+                                        <td>' . $commessa[1] . '</td>
+                                        <td>' . $attivita[6] . '</td>
+                                        <td>' . $attivita[4] . '</td>
+                                        <td>' . $attivita[5] . '</td>
+                                        <td>
+                                            <a class="btn btn-success button-clear" 
+                                                href="responsabile.php?action=convalida&type=validate&activity=' . $attivita[0] . '">
+                                                <i class="fa fa-check-circle fa-2x" aria-hidden="true"></i>
+                                            </a>
+                                            <a class="btn btn-danger button-refuse" 
+                                                href="responsabile.php?action=convalida&type=refuse&activity=' . $attivita[0] . '">
+                                                <i class="fa fa-times-circle fa-2x" aria-hidden="true"></i>
+                                            </a>
+                                        </td>
+                                    </tr>';
+                                } else {
+                                    
+                                }
+                            }
+                        }
+?>
+                        					
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+	</div>
+</section>

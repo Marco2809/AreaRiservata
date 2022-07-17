@@ -1,0 +1,78 @@
+<!--CONTENUTO PRINCIPALE-->
+    <section class="">
+   <div class="row">
+   <div class="col-md-6">
+  <div class="panel panel-primary filterable" style="margin-bottom:5%;">
+      <div class="calendar-heading">
+                  <div style="padding-left:2%;padding-right:2%;">
+                          <span class="legenda-title">Lista Dipendenti</span>
+          <div class="pull-right">
+            <button class="btn btn-info btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-search fa-2x"></span>
+  <span class="span-title">&nbsp; Cerca</span>
+  </button>
+          </div>
+      </div>
+                  </div>
+      <table class="table">
+          <thead>
+              <tr class="filters">
+                  <th><input type="text" class="form-control" placeholder="Num." disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Dipendente" disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Data di Nascita" disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Aggiungi" disabled></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>1</td>
+                  <td>Nome e Cognome</td>
+                  <td>gg/mm/aaaa</td>
+                  <td>
+                                          <a href="#"><i class="fa fa-plus-circle fa-2x" style="color:#77c803;"></i></a>
+                                          </td>
+              </tr> 					
+          </tbody>
+      </table>
+  </div>
+</div>
+
+  <div class="col-md-6">
+  <div class="panel panel-primary filterable" style="margin-bottom:5%;">
+      <div class="calendar-heading">
+                  <div style="padding-left:2%;padding-right:2%;">
+                          <span class="legenda-title">Gruppo ST</span>
+          <div class="pull-right">
+            <button class="btn btn-info btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-search fa-2x"></span>
+  <span class="span-title">&nbsp; Cerca</span>
+  </button>
+          </div>
+      </div>
+                  </div>
+      <table class="table">
+          <thead>
+              <tr class="filters">
+                  <th><input type="text" class="form-control" placeholder="Num." disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Dipendente" disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Data di Nascita" disabled></th>
+                  <th><input type="text" class="form-control" placeholder="Rimuovi" disabled></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>1</td>
+                  <td>Nome e Cognome</td>
+                  <td>gg/mm/aaaa</td>
+                  <td>
+                                          <a href="#">
+                                          <i class="fa fa-minus-circle fa-2x" style="color:#d90e0e;"></i>
+                                          </a>
+                                          </td>
+              </tr> 					
+          </tbody>
+      </table>
+  </div>
+</div>
+
+  </div>
+    </section>
+<!--FINE CONTENUTO PRINCIPALE-->

@@ -1,0 +1,449 @@
+<?php
+   if (!isset($id_mese)) {
+               $id_mese = date("m");
+           }
+
+   if (!isset($id_anno)) {
+               $id_anno = date("Y");
+           }
+
+   if (!isset($_REQUEST['num_giorni'])) {
+   			if(!checkdate($id_mese,28+1,$id_anno)) { $num_giorni = 28;}
+   			else if(!checkdate($id_mese,29+1,$id_anno)) { $num_giorni = 29;}
+   			else if(!checkdate($id_mese,30+1,$id_anno)) { $num_giorni = 30;}
+   			else if(!checkdate($id_mese,31+1,$id_anno)) { $num_giorni = 31;}
+   }
+
+   if(isset($_SESSION['logged'])) {
+
+   	if($id_mese==1) {$mese="Gennaio"; $id_mese="01";}
+   	if($id_mese==2) {$mese="Febbraio"; $id_mese="02";}
+   	if($id_mese==3) {$mese="Marzo"; $id_mese="03";}
+   	if($id_mese==4) {$mese="Aprile"; $id_mese="04";}
+   	if($id_mese==5) {$mese="Maggio"; $id_mese="05";}
+   	if($id_mese==6) {$mese="Giugno"; $id_mese="06";}
+   	if($id_mese==7) {$mese="Luglio"; $id_mese="07";}
+   	if($id_mese==8) {$mese="Agosto"; $id_mese="08";}
+   	if($id_mese==9) {$mese="Settembre"; $id_mese="09";}
+   	if($id_mese==10) $mese="Ottobre";
+   	if($id_mese==11) $mese="Novembre";
+   	if($id_mese==12) $mese="Dicembre";
+
+   }
+   	?>
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="">
+      <meta name="author" content="Dashboard">
+      <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+      <title>Area Riservata-Timesheet prova</title>
+      <!-- Bootstrap core CSS -->
+      <link href="assets/css/bootstrap.css" rel="stylesheet">
+      <!--external css-->
+      <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+      <link href="assets/js/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet" />
+      <!-- Custom styles for this template -->
+      <link href="assets/css/style.css" rel="stylesheet">
+      <link href="assets/css/style-responsive.css" rel="stylesheet">
+      <link href="assets/css/calendario.css" rel="stylesheet">
+      <script type="text/javascript">
+         function durata_tot(id){
+             if(id=="0") id = "";
+                var id1 = "minuti_fine"+id;
+                var id2 = "ora_fine"+id;
+                var id3 = "ora_inizio"+id;
+                var id4 = "minuti_inizio"+id;
+                var id5 = "durata"+id;
+
+
+               if(document.getElementById(id1).value=="Minuti") var mf=0;
+               else mf=(document.getElementById(id1).value)-0;
+
+               if(document.getElementById(id3).value=="Ora") var hi=0;
+               else hi=(document.getElementById(id3).value)-0;
+               if(document.getElementById(id2).value=="Ora") hf=0;
+               else hf=(document.getElementById(id2).value)-0;
+               if(document.getElementById(id4).value=="Minuti") mi=0;
+               else mi=(document.getElementById(id4).value)-0;
+
+
+               var ore = hf-hi;
+               var minuti = mf - mi;
+                if(hi<=13&&hf>=14) ore = ore - 1;
+               if(minuti<0) var minuti = minuti + 60;
+
+               if(ore<0||(hf==hi&&mi>mf)) var somma = "Errore";
+               else var somma = ore + "h" + minuti;
+
+
+
+               document.getElementById(id5).value = somma;
+               }
+
+
+
+      </script>
+      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+   </head>
+   <body>
+      <section id="container" >
+         <!-- **********************************************************************************************************************************************************
+            BARRA IN ALTO E NOTIFICHE
+             *********************************************************************************************************************************************************** -->
+         <!--INIZIO HEADER-->
+         <header class="header black-bg">
+            <div class="sidebar-toggle-box">
+               <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+            </div>
+            <!--INIZIO LOGO-->
+            <a href="home.html" class="logo">
+            <b><img src="assets/img/logo.png" style="width:100%;"></b></a>
+            <!--FINE LOGO-->
+            <div class="nav notify-row" id="top_menu">
+               <!--  INIZIO NOTIFICHE -->
+               <ul class="nav top-menu">
+                  <!-- FINE NOTIFICHE  -->
+                  <!-- inbox dropdown start-->
+                  <li id="header_inbox_bar" class="dropdown">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="index.html#">
+                     <i class="fa fa-envelope-o"></i>
+                     <span class="badge bg-theme">5</span>
+                     </a>
+                     <ul class="dropdown-menu extended inbox">
+                        <div class="notify-arrow notify-arrow-green"></div>
+                        <li>
+                           <p class="green">You have 5 new messages</p>
+                        </li>
+                        <li>
+                           <a href="index.html#">
+                           <span class="photo"><img alt="avatar" src="assets/img/ui-zac.jpg"></span>
+                           <span class="subject">
+                           <span class="from">Zac Snider</span>
+                           <span class="time">Just now</span>
+                           </span>
+                           <span class="message">
+                           Hi mate, how is everything?
+                           </span>
+                           </a>
+                        </li>
+                        <li>
+                           <a href="index.html#">
+                           <span class="photo"><img alt="avatar" src="assets/img/ui-divya.jpg"></span>
+                           <span class="subject">
+                           <span class="from">Divya Manian</span>
+                           <span class="time">40 mins.</span>
+                           </span>
+                           <span class="message">
+                           Hi, I need your help with this.
+                           </span>
+                           </a>
+                        </li>
+                        <li>
+                           <a href="index.html#">
+                           <span class="photo"><img alt="avatar" src="assets/img/ui-danro.jpg"></span>
+                           <span class="subject">
+                           <span class="from">Dan Rogers</span>
+                           <span class="time">2 hrs.</span>
+                           </span>
+                           <span class="message">
+                           Love your new Dashboard.
+                           </span>
+                           </a>
+                        </li>
+                        <li>
+                           <a href="index.html#">
+                           <span class="photo"><img alt="avatar" src="assets/img/ui-sherman.jpg"></span>
+                           <span class="subject">
+                           <span class="from">Dj Sherman</span>
+                           <span class="time">4 hrs.</span>
+                           </span>
+                           <span class="message">
+                           Please, answer asap.
+                           </span>
+                           </a>
+                        </li>
+                        <li>
+                           <a href="index.html#">See all messages</a>
+                        </li>
+                     </ul>
+                  </li>
+                  <!-- inbox dropdown end -->
+               </ul>
+               <!--  notification end -->
+            </div>
+            <div class="top-menu">
+               <ul class="nav pull-right top-menu">
+                  <li><a class="logout" href="login.html">Logout</a></li>
+               </ul>
+            </div>
+         </header>
+         <!--header end-->
+         <!-- **********************************************************************************************************************************************************
+            SIDEBAR MENU
+            *********************************************************************************************************************************************************** -->
+         <!--INIZIO SIDEBAR-->
+         <aside>
+            <div id="sidebar"  class="nav-collapse ">
+               <!-- INIZIO SIDEBAR MENU-->
+               <ul class="sidebar-menu" id="nav-accordion">
+                  <p class="centered"><a href="profile.html"><img src="assets/img/profilo.png" class="img-circle" width="60"></a></p>
+                  <h5 class="centered">Nome Cognome</h5>
+                  <li class="mt">
+                     <a class="" href="home.html">
+                     <i class="fa fa-home"></i>
+                     <span>Home</span>
+                     </a>
+                  </li>
+                  <li class="mt">
+                     <a class="" href="home.html">
+                     <i class="fa fa-dashboard"></i>
+                     <span>Bacheca</span>
+                     </a>
+                  </li>
+                  <li class="sub-menu">
+                     <a href="javascript:;" >
+                     <i class="fa fa-user"></i>
+                     <span>Profilo</span>
+                     </a>
+                     <ul class="sub">
+                        <li><a  href="general.html">Riepilogo</a></li>
+                        <li><a  href="buttons.html">Questionario</a></li>
+                        <li><a  href="panels.html">Anagrafica</a></li>
+                        <li><a  href="panels.html">Esperienza</a></li>
+                        <li><a  href="panels.html">Istruzione</a></li>
+                        <li><a  href="panels.html">Lingue Straniere</a></li>
+                        <li><a  href="panels.html">Plus</a></li>
+                        <li><a  href="panels.html">Riepilogo competenze</a></li>
+                     </ul>
+                  </li>
+                  <li class="sub-menu">
+                     <a class="active" href="javascript:;" >
+                     <i class="fa fa-calendar"></i>
+                     <span>Timesheet</span>
+                     </a>
+                  </li>
+                  <li class="sub-menu">
+                     <a href="javascript:;" >
+                     <i class="fa fa-lock"></i>
+                     <span>Amministrazione</span>
+                     </a>
+                  </li>
+                  <li class="sub-menu">
+                     <a href="javascript:;" >
+                     <i class="fa fa-rocket"></i>
+                     <span>Responsabile</span>
+                     </a>
+                  </li>
+               </ul>
+               <!-- FINE SIDEBAR MENU-->
+            </div>
+         </aside>
+         <!--FINE SIDEBAR-->
+         <!-- **********************************************************************************************************************************************************
+            MAIN CONTENT
+            *********************************************************************************************************************************************************** -->
+         <!--main content start-->
+         <section id="main-content">
+            <section class="wrapper">
+               <!-- GIORNO -->
+               <center>
+                  <div class="calendar-container">
+
+                     <div class="panel panel-primary" style="margin-top:6%;">
+                        <div class="calendar-heading">
+                           <a href="#">
+                           <i class="arrowsx fa fa-chevron-left fa-2x" aria-hidden="true"></i>
+                           </a>
+                           <span class="mese-title">08/06/2017</span>
+                           <a href="#">
+                           <i class="arrowdx fa fa-chevron-right fa-2x" aria-hidden="true"></i>
+                           </a>
+                        </div>
+					<div class="panel-body panel-height">
+					<div class="row">
+
+					<div class="col-md-6">
+					<button type="button" class="btn btn-success btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">Presente</button>
+					<br/>
+					<button type="button" class="btn btn-warning btn-xs legenda" data-toggle="modal" data-target="#ModalEvents">Maternità</button>
+					</div>
+
+					<div class="col-md-6 aggiungi2">
+					<a href="#ModalForm" data-toggle="modal" data-target="#ModalForm">
+                     <i class="fa fa-plus-circle fa-3x aggiungi2" aria-hidden="true"></i>
+                     </a>
+					</div>
+
+					</div>
+
+					</div>
+                    </div>
+
+                     <!-- MODAL EVENTI -->
+                     <div class="modal fade" id="ModalEvents" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                 <h4 class="modal-title">DETTAGLIO EVENTO</h4>
+                              </div>
+                              <div class="modal-body">
+                                 <p>Riunione Fastdata ore 10.00 con team di sviluppo.</p>
+                                 <p>
+                                    <a href="#"><button type="button" class="btn btn-info" data-dismiss="modal">Modifica</button></a>
+                                    <a href="#"><button type="button" class="btn btn-danger" data-dismiss="modal">Elimina</button></a>
+                                 </p>
+                              </div>
+                              <div class="modal-footer">
+                                 <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <!-- MODAL FORM ATTIVITA' --->
+                     <div class="modal fade" id="ModalForm" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                 <h4 class="modal-title">NUOVA ATTIVITA'</h4>
+                              </div>
+                              <div class="modal-body text-center">
+							  <div class="row">
+							  <form role="form">
+
+                             <div class="col-md-6">
+							 <h4 style="color:#FF6B6B;"><strong>PRESENZA</strong></h4>
+
+							 <div class="form-group">
+                                       <p class="span-form">Seleziona Tipo:</p>
+                                       <select class="form-control" name="commessa" style="width: 100%;">
+                                          <option value=""></option>
+                                          <option value="Presente">Presente</option>
+                                          <option value="Riunione">Riunione</option>
+                                          <option value="Straordinario">Straordinario</option>
+                                          <option value="Permessi">Permessi</option>
+                                          <option value="Ferie">Ferie</option>
+                                          <option value="Maternità">Maternità</option>
+                                          <option value="Altro">Altro</option>
+                                       </select>
+                                    </div>
+
+							<div class="form-group">
+                              <p class="span-form">Data:</p>
+                              <input type="date" name="data_fine" class="form-control" min="2017-06-07" value="">
+                              </div>
+
+							 </div>
+
+                             <div class="col-md-4">
+
+							 <h4 style="color:#FF6B6B;"><strong>TIMECARD</strong></h4>
+
+							 <div class="form-group">
+
+							 <fieldset style="text-align:left;">
+
+							 <p class="span-form">Seleziona Commessa:</p><br>
+
+							 <div class="row">
+
+							 <div class="col-md-7">
+							 <input type="checkbox" name="" value=""/>
+							<span style="font-size:bold;">Nome Commessa</span>
+							 </div>
+
+							 <div class="col-md-5">
+							 <input type="text" name="ore" placeholder="Ore" class="form-control" id="ore" value="">
+							 </div>
+
+							 </div>
+                            </fieldset>
+                            </div>
+
+							 </div>
+
+                             </div>
+							 </form>
+
+                             <div class="modal-footer">
+							 <center>
+							 <button type="submit" class="btn btn-success" data-dismiss="modal">Aggiungi</button>
+							 </center>
+							 </div>
+
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+
+                     <script>
+                        function mostranascondi(div, switchImgTag) {
+                                var ele = document.getElementById(div);
+                                var imageEle = document.getElementById(switchImgTag);
+                                if(ele.style.display == "inline") {
+                                        ele.style.display = "none";
+                        		imageEle.innerHTML = '<img src="../img/apri.png">';
+                                }
+                                else {
+                                        ele.style.display = "inline";
+                                        imageEle.innerHTML = '<img src="../img/apri.png">';
+                                }
+                        }
+                     </script>
+                  </div>
+               </center>
+               </center>
+               </div>
+               </div>
+               </aside>
+               </div>
+               <!-- page end-->
+            </section>
+            <! --/wrapper -->
+         </section>
+         <!-- /MAIN CONTENT -->
+         <!--main content end-->
+         <!--INIZIO FOOTER-->
+         <footer class="site-footer">
+            <div class="text-center">
+               Powered by Servicetech S.r.l. - Attiva dal 01/07/2020
+               <a href="home.html#" class="go-top">
+               <i class="fa fa-angle-up"></i>
+               </a>
+            </div>
+         </footer>
+         <!--FINE FOOTER-->
+      </section>
+      <!-- js placed at the end of the document so the pages load faster -->
+      <script src="assets/js/jquery.js"></script>
+      <script src="assets/js/jquery-ui-1.9.2.custom.min.js"></script>
+      <script src="assets/js/fullcalendar/fullcalendar.min.js"></script>
+      <script src="assets/js/bootstrap.min.js"></script>
+      <script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+      <script src="assets/js/jquery.scrollTo.min.js"></script>
+      <script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
+      <script src="assets/js/addevent.js" type="text/javascript"></script>
+      <!--common script for all pages-->
+      <script src="assets/js/common-scripts.js"></script>
+      <!--script for this page-->
+      <script src="assets/js/calendar-conf-events.js"></script>
+      <script>
+         //custom select box
+
+         $(function(){
+             $("select.styled").customSelect();
+         });
+
+      </script>
+   </body>
+</html>

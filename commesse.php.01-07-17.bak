@@ -1,0 +1,191 @@
+<!--CONTENUTO PRINCIPALE-->
+	  <section class="">
+
+
+	  <div class="panel panel-primary" style="margin-bottom:2%;">
+            <div class="calendar-heading">
+			<div style="padding-left:1%;padding-right:2%;">
+			<span class="legenda-title">Commesse</span>
+			<a href="#">
+			<span class="legenda-title">
+			<i class="fa fa-chevron-circle-left fa-2x" style="float:right;margin-top:-0.5%;"></i>
+			</span>
+			</a>
+			</div>
+			</div>
+
+ <div class="panel-body">
+   <form action="" method="post">
+      <table class="table" style="margin-top:1%;">
+         <tbody>
+            <tr>
+               <td class="td-intestazione">Seleziona Commessa:</td>
+               <td>
+                  <select name="ufficio" style="width:60%;margin-top:1%;" class="form-control"> 
+                             
+
+<option value="21">Ambasciata d'Italia in Russia</option>
+<option value="22">Cis Nato</option>
+<option value="26">Clienti Vari</option>
+<option value="4">Consip - Ministero Grazia e Giustizia</option>
+<option value="10">Engineering </option>
+<option value="18">Equitalia</option>
+<option value="7">Fick</option>
+<option value="8">Fidasc</option>
+<option value="25">Fincons SPA</option>
+<option value="16">Infocamere</option>
+<option value="13">International Trading Device</option>
+<option value="15">Ismea - Manutenzione e Assistenza</option>
+<option value="3">Kaba</option>
+<option value="5">MAE - Help Desk</option>
+<option value="19">Mae - Manutenzione SIFC</option>
+<option value="11">Poste Italiane - Application Operation</option>
+<option value="6">Poste Italiane - Gestione Attese</option>
+<option value="1">Poste Italiane - Monitoraggio</option>
+<option value="12">Roma Servizi Mobilita</option>
+<option value="14">Roma Servizi Mobilita - Manutenzione</option>
+<option value="20">Sielte</option>
+<option value="17">Softlab</option>
+<option value="2">Solari</option>
+<option value="9">Solari -&gt; T4T - Gestione Attese</option>
+<option value="23">T4T - Datacenter MTZ</option>
+<option value="24">T4T - Postino Elettronico</option>
+              </select>  
+               </td>
+              <td>
+              <a href="#ModalForm1" data-toggle="modal" data-target="#ModalForm1">
+              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalCommessa">Dettaglio</button>
+              </a>
+              </td>
+            </tr>
+         </tbody>
+      </table>
+   </form>
+   </div>
+</div>
+
+
+
+<div class="panel panel-primary" style="margin-bottom:5%;">
+            <div class="legenda-heading">
+      <div style="padding-left:1%;padding-right:2%;">
+      <span class="legenda-title">Aggiungi Commessa</span>
+      </div>
+      </div>
+
+ <div class="panel-body">
+   <form action="" method="post">
+        <table class="table" style="margin-top:1%;">
+        <tbody>
+
+        <tr>
+        <td class="td-intestazione">Nome Commessa:</td>
+        <td>
+        <input name="" class="form-control" value="" type="text">
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Cliente:</td>
+        <td>
+        <input name="" class="form-control" value="" type="text">
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Alias:</td>
+        <td>
+        <input name="" class="form-control" value="" type="text">
+        </td>
+        </tr>
+
+        <tr>
+        <td class="td-intestazione">Responsabile:</td>
+        <td>
+        <select name="responsabili" style="margin-top:1%;" class="form-control"> 
+       <option value="0">1 nome</option>
+       <option value="1">2 nome</option>
+       <option value="2">3 nome</option>
+       </select>
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+        <button type="submit" class="btn btn-success">Aggiungi</button>
+        <button type="submit" class="btn btn-danger">Annulla</button>
+        </td>
+        </tr>
+
+        </tbody>
+        </table>
+        </form>
+   </div>
+</div>
+
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->
+
+<!--MODAL DETTAGLIO COMMESSA-->
+<div class="modal fade" id="ModalCommessa" role="dialog">
+    <div class="modal-dialog modal-lg">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal">&times;</button>
+             <h4 class="modal-title">DETTAGLIO COMMESSA</h4>
+          </div>
+          <div class="modal-body">
+           <form action="" method="post">
+          <table class="table" style="margin-top:1%;">
+          <tbody>
+
+          <tr>
+          <td class="td-intestazione">Commessa:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Cliente:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Alias:</td>
+          <td>
+          <input name="" class="form-control" value="" type="text">
+          </td>
+          </tr>
+
+          <tr>
+          <td class="td-intestazione">Responsabile:</td>
+          <td>
+          <select name="responsabili" style="margin-top:1%;" class="form-control"> 
+         <option value="0">1 nome</option>
+         <option value="1">2 nome</option>
+         <option value="2">3 nome</option>
+         </select>
+          </td>
+          </tr>
+
+          <tr>
+          <td>
+          <button type="submit" class="btn btn-success">Modifica</button>
+          <button type="submit" class="btn btn-danger">Annulla</button>
+          </td>
+          </tr>
+
+          </tbody>
+          </table>
+          </form>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+          </div>
+       </div>
+    </div>
+ </div>
+<!--MODAL DETTAGLIO COMMESSA-->

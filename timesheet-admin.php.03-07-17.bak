@@ -1,0 +1,167 @@
+<?php
+
+if(isset($_POST['next'])){
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+
+            
+   if($id_mese=="01") $id_mese = 1;
+   if($id_mese=="02") $id_mese = 2;
+   if($id_mese=="03") $id_mese = 3;
+   if($id_mese=="04") $id_mese = 4;
+   if($id_mese=="05") $id_mese = 5;
+   if($id_mese=="06") $id_mese = 6;
+   if($id_mese=="07") $id_mese = 7;
+   if($id_mese=="08") $id_mese = 8;
+   if($id_mese=="09") $id_mese = 9;
+       
+     if($id_mese==12){ $id_anno++;
+     $id_mese = 1;
+     }
+     else $id_mese= $id_mese + 1;
+     
+     if($id_mese < 10) {
+         $id_mese_original = '0' . $id_mese;
+     } else {
+         $id_mese_original = $id_mese;
+     }
+   
+ }
+ 
+ if(isset($_POST['prev'])){
+    
+    if (isset($_REQUEST['id_mese'])&&$_REQUEST['id_mese']!="") {
+            $id_mese_original = $id_mese = $_REQUEST['id_mese'];
+        } 
+		
+if (isset($_REQUEST['id_anno'])&&$_REQUEST['id_anno']!="") {
+            $id_anno = $_REQUEST['id_anno'];
+        } 
+
+     if($id_mese==1) {$id_mese= 12;
+     $id_anno = $id_anno - 1;
+     }
+     else $id_mese= $id_mese - 1;
+     
+     if($id_mese < 10) {
+         $id_mese_original = '0' . $id_mese;
+     } else {
+         $id_mese_original = $id_mese;
+     }
+
+ }
+ 
+         
+if(!isset($id_mese)) {
+            $id_mese_original = $id_mese = date("m");
+            $id_mese1 = date("m");
+        } else {  
+            if(!isset($id_mese1)){
+        if($id_mese<=9) $id_mese1 = "0".$id_mese;
+        else $id_mese1 = $id_mese;
+            }
+ }
+ 
+
+ 
+ if (!isset($id_anno)) {
+            $id_anno = date("Y");
+        }
+     
+        
+        if($id_mese==1) $mese_cal="Gennaio"; 
+	if($id_mese==2) $mese_cal="Febbraio"; 
+	if($id_mese==3) $mese_cal="Marzo"; 
+	if($id_mese==4) $mese_cal="Aprile"; 
+	if($id_mese==5) $mese_cal="Maggio"; 
+	if($id_mese==6) $mese_cal="Giugno"; 
+	if($id_mese==7) $mese_cal="Luglio"; 
+	if($id_mese==8) $mese_cal="Agosto"; 
+	if($id_mese==9) $mese_cal="Settembre"; 
+	if($id_mese==10) $mese_cal="Ottobre"; 
+	if($id_mese==11) $mese_cal="Novembre"; 
+	if($id_mese==12) $mese_cal="Dicembre"; 
+
+        if (!isset($_REQUEST['num_giorni'])) {
+			if(!checkdate($id_mese,28+1,$id_anno)) { $num_giorni = 28;}
+			else if(!checkdate($id_mese,29+1,$id_anno)) { $num_giorni = 29;}
+			else if(!checkdate($id_mese,30+1,$id_anno)) { $num_giorni = 30;}
+			else if(!checkdate($id_mese,31+1,$id_anno)) { $num_giorni = 31;}
+}
+ 
+ ?>
+
+<!--CONTENUTO PRINCIPALE-->
+<section class="">
+<div class="panel panel-primary" style="margin-bottom:1%;">
+<center>
+
+    <div class="calendar-heading">
+        <form action="" method="post">
+            <button type="submit" name="prev" style="background: none; border: 0;"><i class="arrowdx fa fa-chevron-left fa-2x" aria-hidden="true"></i></button>
+
+       <span class="mese-title"><?php echo $mese_cal . " " . $id_anno; ?></span>
+
+       <button type="submit" name="next" style="background: none; border: 0;"><i class="arrowdx fa fa-chevron-right fa-2x" aria-hidden="true"></i></button>
+
+       <input type="hidden" name="id_mese" value="<?php echo $id_mese;?>">
+       <input type="hidden" name="id_anno" value="<?php echo $id_anno;?>">
+        </form>
+    </div>
+
+   </center>
+   </div>
+
+
+   <div class="panel panel-primary filterable" style="margin-bottom:5%;">
+  <div class="legenda-heading">
+              <div style="padding:1%;">
+                      <button class="btn btn-success btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-search fa-2x"></span>
+                      <span class="span-title">&nbsp; Cerca</span>
+                      </button>
+      <div class="pull-right">
+      <button class="btn btn-success btn-xs btn-filter button-clear" style="color:#fff;"><span class="fa fa-file-excel-o fa-2x"></span>
+      <span class="span-title">&nbsp; Download Excel</span>
+      </button>
+      </div>
+  </div>
+              </div>
+  <table class="table">
+      <thead>
+          <tr class="filters">
+              <th><input type="text" class="form-control" placeholder="Dipendente"></th>
+              <th><input type="text" class="form-control" placeholder="Num. Giorni"></th>
+              <th><input type="text" class="form-control" placeholder="Ore Totali"></th>
+              <th><input type="text" class="form-control" placeholder="Stato"></th>
+          </tr>
+      </thead>
+      <tbody>
+<?php 
+            $attivitaClass = new Attivita();
+            $usersArray = $attivitaClass->selectHoursByMonth($id_mese_original);
+            foreach($usersArray as $user) {
+                if($user[4] != '') {
+                    $user[4] = '<span class="label label-danger">Non Validato</span>';
+                } else {
+                    $user[4] = '<span class="label label-success">Validato</span>';
+                }
+                
+                echo '<tr>' . 
+                        '<td>' . $user[0] . ' ' . $user[1] . '</td>' .
+                        '<td>' . $user[3] . '</td>' .
+                        '<td>' . $user[2] . '</td>' .
+                        '<td>' . $user[4] . '</td>' .
+                     '</tr>';
+            }
+?>						
+      </tbody>
+  </table>
+       
+</div>
+</section>
+<!--FINE CONTENUTO PRINCIPALE-->

@@ -1,0 +1,490 @@
+<?php 
+
+
+if(isset($_SESSION['user_idd'])) {
+    
+    $sql3_anagrafica = "SELECT 
+                           *
+                            FROM anagrafica WHERE user_id=" . $_SESSION['user_idd'];
+
+
+    $result3_anagrafica = mysql_query($sql3_anagrafica, $conn->db);
+
+    if (!$result3_anagrafica) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        while ($row3 = mysql_fetch_array($result3_anagrafica, MYSQL_ASSOC)) {
+            $gruppi_utente  = $row3['gruppi_utente'];      
+                    
+        }
+    }
+    $_SESSION['gruppo_admin']="";
+    $_SESSION['gruppo_writer'] = "";
+    $_SESSION['gruppo_resp'] = "";
+    $ar_groups = json_decode($gruppi_utente);
+// access first element of $ar array
+    for($i=0;$i<count($ar_groups);$i++){
+        
+                 //echo $array_gruppi[$n-1]->profilo. "<br>";
+                 if($ar_groups[$i]->profilo=="1") {$_SESSION['is_admin']="1";
+                 $_SESSION['gruppo_admin'].=$ar_groups[$i]->gruppo.",";
+                 } 
+                 
+                  if($ar_groups[$i]->profilo=="2") {$_SESSION['is_resp']="1";
+                 $_SESSION['gruppo_resp'].=$ar_groups[$i]->gruppo.",";
+                 } 
+                 
+                  if($ar_groups[$i]->profilo=="3") {$_SESSION['is_writer']="1";
+                  $_SESSION['gruppo_writer'].=$ar_groups[$i]->gruppo.",";
+                 } 
+             }
+}
+$_SESSION['gruppo_admin'] = substr($_SESSION['gruppo_admin'],0,-1);
+$_SESSION['gruppo_resp'] = substr($_SESSION['gruppo_resp'],0,-1);
+$_SESSION['gruppo_writer'] = substr($_SESSION['gruppo_writer'],0,-1);
+
+?>
+<div id="toolbar"  class="has-sub" style="height:45px; background-color:#232425; width:auto;">
+
+<style> 
+        <style>
+      /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+      @import url(http://fonts.googleapis.com/css?family=Open+Sans);
+.btn { display: inline-block; *display: inline; *zoom: 1; padding: 4px 10px 4px; margin-bottom: 0; font-size: 13px; line-height: 18px; color: #333333; text-align: center;text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75); vertical-align: middle; background-color: #f5f5f5; background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6); background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6); background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6)); background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6); background-image: -o-linear-gradient(top, #ffffff, #e6e6e6); background-image: linear-gradient(top, #ffffff, #e6e6e6); background-repeat: repeat-x; filter: progid:dximagetransform.microsoft.gradient(startColorstr=#ffffff, endColorstr=#e6e6e6, GradientType=0); border-color: #e6e6e6 #e6e6e6 #e6e6e6; border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); border: 1px solid #e6e6e6; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer; *margin-left: .3em; }
+.btn:hover, .btn:active, .btn.active, .btn.disabled, .btn[disabled] { background-color: #e6e6e6; }
+.btn-large { padding: 9px 14px; font-size: 15px; line-height: normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
+.btn:hover { color: #333333; text-decoration: none; background-color: #e6e6e6; background-position: 0 -15px; -webkit-transition: background-position 0.1s linear; -moz-transition: background-position 0.1s linear; -ms-transition: background-position 0.1s linear; -o-transition: background-position 0.1s linear; transition: background-position 0.1s linear; }
+.btn-primary, .btn-primary:hover { text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); color: #ffffff; }
+.btn-primary.active { color: rgba(255, 255, 255, 0.75); }
+.btn-primary { background-color: #669933; background-image: -moz-linear-gradient(top, #6eb6de, #669933); background-image: -ms-linear-gradient(top, #6eb6de, #4a77d4); background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#6eb6de), to(#4a77d4)); background-image: -webkit-linear-gradient(top, #6eb6de, #4a77d4); background-image: -o-linear-gradient(top, #6eb6de, #4a77d4); background-image: linear-gradient(top, #6eb6de, #4a77d4); background-repeat: repeat-x; filter: progid:dximagetransform.microsoft.gradient(startColorstr=#6eb6de, endColorstr=#4a77d4, GradientType=0);  border: 1px solid #3762bc; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5); }
+.btn-primary:hover, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] { filter: none; background-color: #669933; }
+.btn-block { width: 100%; display:block; }
+
+* { -webkit-box-sizing:border-box; -moz-box-sizing:border-box; -ms-box-sizing:border-box; -o-box-sizing:border-box; box-sizing:border-box; }
+
+
+input[type=cerca] {
+    width: 90px;
+  height:20%;
+  float:right;
+  margin-top:16px;
+  margin-right:8px;
+    font-size: 16px;
+  color:#46BF2E;
+  border:none;
+    background-color: transparent;
+    background-image: url('img/lente.png');
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+input[type=cerca]:focus {
+    width: 20%;
+  height:20%;
+}
+
+#cssmenu,
+#cssmenu ul,
+#cssmenu ul li,
+#cssmenu ul li a,
+#cssmenu #menu-button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: 1;
+  display: block;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#cssmenu:after,
+#cssmenu > ul:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+#cssmenu #menu-button {
+  display: none;
+}
+#cssmenu {
+  width: auto;
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1;
+  background: transparent;
+}
+#menu-line {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  height: 2px;
+  background: #669933;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
+}
+#cssmenu > ul > li {
+  float: left;
+}
+#cssmenu.align-center > ul {
+  font-size: 0;
+  text-align: center;
+}
+#cssmenu.align-center > ul > li {
+  display: inline-block;
+  float: none;
+}
+#cssmenu.align-center ul ul {
+  text-align: left;
+}
+#cssmenu.align-right > ul > li {
+  float: right;
+}
+#cssmenu.align-right ul ul {
+  text-align: right;
+}
+#cssmenu > ul > li > a {
+  padding: 20px;
+  font-size: 15px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #d0d0d0;
+  -webkit-transition: color .2s ease;
+  -moz-transition: color .2s ease;
+  -ms-transition: color .2s ease;
+  -o-transition: color .2s ease;
+  transition: color .2s ease;
+}
+#cssmenu > ul > li:hover > a,
+#cssmenu > ul > li.active > a {
+  color:#828080;
+}
+#cssmenu > ul > li.has-sub > a {
+  padding-right: 25px;
+}
+#cssmenu > ul > li.has-sub > a::after {
+  position: absolute;
+  top: 21px;
+  right: 10px;
+  width: 4px;
+  height: 4px;
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  content: "";
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transition: border-color 0.2s ease;
+  -moz-transition: border-color 0.2s ease;
+  -ms-transition: border-color 0.2s ease;
+  -o-transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease;
+}
+#cssmenu > ul > li.has-sub:hover > a::after {
+  border-color: #009ae1;
+}
+#cssmenu ul ul {
+  position: absolute;
+  left: -9999px;
+}
+#cssmenu li:hover > ul {
+  left: auto;
+}
+#cssmenu.align-right li:hover > ul {
+  right: 0;
+}
+#cssmenu ul ul ul {
+  margin-left: 100%;
+  top: 0;
+}
+#cssmenu.align-right ul ul ul {
+  margin-left: 0;
+  margin-right: 100%;
+}
+#cssmenu ul ul li {
+  height: 0;
+  -webkit-transition: height .2s ease;
+  -moz-transition: height .2s ease;
+  -ms-transition: height .2s ease;
+  -o-transition: height .2s ease;
+  transition: height .2s ease;
+}
+#cssmenu ul li:hover > ul > li {
+  height: 32px;
+}
+#cssmenu ul ul li a {
+  padding: 10px 10px;
+  width: 250px;
+  font-size: 14px;
+  background: #333333;
+  text-decoration: none;
+  color: #dddddd;
+  -webkit-transition: color .2s ease;
+  -moz-transition: color .2s ease;
+  -ms-transition: color .2s ease;
+  -o-transition: color .2s ease;
+  transition: color .2s ease;
+}
+#cssmenu ul ul li:hover > a,
+#cssmenu ul ul li a:hover {
+  color: #ffffff;
+  background-color:#669933;
+}
+#cssmenu ul ul li.has-sub > a::after {
+  position: absolute;
+  top: 13px;
+  right: 10px;
+  border-bottom: 1px solid #d0d0d0;
+  border-right: 1px solid #dddddd;
+  content: "";
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transition: border-color 0.2s ease;
+  -moz-transition: border-color 0.2s ease;
+  -ms-transition: border-color 0.2s ease;
+  -o-transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease;
+}
+#cssmenu.align-right ul ul li.has-sub > a::after {
+  right: auto;
+  left: 10px;
+  border-bottom: 0;
+  border-right: 0;
+  border-top: 1px solid #dddddd;
+  border-left: 1px solid #dddddd;
+}
+#cssmenu ul ul li.has-sub:hover > a::after {
+  border-color: #ffffff;
+}
+@media all and (max-width: 768px), only screen and (-webkit-min-device-pixel-ratio: 2) and (max-width: 1024px), only screen and (min--moz-device-pixel-ratio: 2) and (max-width: 1024px), only screen and (-o-min-device-pixel-ratio: 2/1) and (max-width: 1024px), only screen and (min-device-pixel-ratio: 2) and (max-width: 1024px), only screen and (min-resolution: 192dpi) and (max-width: 1024px), only screen and (min-resolution: 2dppx) and (max-width: 1024px) {
+  #cssmenu {
+    width: 100%;
+  }
+  #cssmenu ul {
+    width: 100%;
+    display:block;
+  }
+  #cssmenu.align-center > ul,
+  #cssmenu.align-right ul ul {
+    text-align: left;
+  }
+  #cssmenu ul li,
+  #cssmenu ul ul li,
+  #cssmenu ul li:hover > ul > li {
+    width: 100%;
+    height: auto;
+    border-top: 1px solid rgba(120, 120, 120, 0.15);
+  }
+  #cssmenu ul li a,
+  #cssmenu ul ul li a {
+    width: 100%;
+  }
+  #cssmenu > ul > li,
+  #cssmenu.align-center > ul > li,
+  #cssmenu.align-right > ul > li {
+    float: none;
+    display: block;
+  }
+  #cssmenu ul ul li a {
+    padding: 20px 20px 20px 30px;
+    font-size: 12px;
+    color: #000000;
+    background: #333333;
+  }
+  #cssmenu ul ul li:hover > a,
+  #cssmenu ul ul li a:hover {
+    color: #000000;
+  }
+  #cssmenu ul ul ul li a {
+    padding-left: 40px;
+  }
+  #cssmenu ul ul,
+  #cssmenu ul ul ul {
+    position: relative;
+    left: 0;
+    right: auto;
+    width: 100%;
+    margin: 0;
+  }
+  #cssmenu > ul > li.has-sub > a::after,
+  #cssmenu ul ul li.has-sub > a::after {
+    display: block;
+  }
+  #menu-line {
+    display: none;
+  }
+  #cssmenu #menu-button {
+    display: block;
+    padding: 10px;
+    color: #000000;
+    cursor: pointer;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  #cssmenu #menu-button::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: block;
+    width: 15px;
+    height: 2px;
+    background: #000000;
+  }
+  #cssmenu #menu-button::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    display: block;
+    width: 15px;
+    height: 3px;
+    border-top: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+  }
+  #cssmenu .submenu-button {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    top: 0;
+    display: block;
+    border-left: 1px solid rgba(120, 120, 120, 0.15);
+    height: 52px;
+    width: 52px;
+    cursor: pointer;
+  }
+  #cssmenu .submenu-button::after {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 26px;
+    display: block;
+    width: 1px;
+    height: 11px;
+    background: #000000;
+    z-index: 99;
+  }
+  #cssmenu .submenu-button::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 26px;
+    display: block;
+    width: 11px;
+    height: 1px;
+    background: #000000;
+    z-index: 99;
+  }
+  #cssmenu .submenu-button.submenu-opened:after {
+    display: none;
+  }
+
+    </style>
+
+</style>
+
+<body>
+<div id="toolbar"  class="has-sub" style="height:45px; background-color:#232425; width:auto;">
+  <form>
+  <input type="cerca" name="search" placeholder="cerca..">
+</form>
+
+<div id="lente" class="has-sub" style="height:35px; background-color:#28292a; width:25px;height:20%;float:right;margin-top:15px;margin-left:8px;"><img src="img/lente.png" width="25" height="25"></div>
+<a href="http://webmail.service-tech.org/login.php?" target="_blank"><img src="img/stmail.png" style="float:right; margin-top:8px;"></a>
+<a href="logout.php"><img src="img/logout.png" style="float:right; margin-top:10px;"></a>
+</div>
+</div>
+
+<div id="container" class="has-sub" style="height:80px; background-color:#28292a; padding:10px; padding-bottom:-10px;">
+<div id="logo" style="width:246px; float:left;"><a href="#"><img src="img/logo1.png" style="width:300px; height:40px; margin-left:20px;"></a></div>
+
+<div id='cssmenu' style="float:right;">
+  <ul>
+   <li><img src="img/home.png" style="width:16px; height:16px; float:left; margin-top:18px;"><a href='http://service-tech.org/servicetech/'>HOME</a></li>
+   <li><a href='#'>SERVIZI</a>
+      <ul>
+         <li class='has-sub'><a href='http://service-tech.org/servicetech/index.php/servizi/software-it-solutions'>Software & IT Solutions</a>
+         </li>
+         <li class='has-sub'><a href='http://service-tech.org/servicetech/index.php/servizi/system-network-management'>System & Network Management</a>
+         </li>
+         <li class='has-sub'><a href='http://service-tech.org/servicetech/index.php/servizi/sw-hw-solutions'>Soluzioni Software & Hardware</a>
+         </li>
+         <li class='has-sub'><a href='http://service-tech.org/servicetech/index.php/servizi/cablaggio'>Cabling</a>
+         </li>
+         <li class='has-sub'><a href='http://service-tech.org/servicetech/index.php/servizi/servicedesk'>Service Desk</a>
+         </li>
+      </ul>
+   </li>
+   <li><a href='http://service-tech.org/servicetech/index.php/lavora-con-noi'>LAVORA CON NOI</a></li>
+   <li><a href='http://service-tech.org/servicetech/index.php/contatti'>CONTATTI</a></li>
+   <li><a href='http://service-tech.org/servicetech/index.php/download'>DOWNLOAD</a></li>
+   <li><a href='#'><img src="img/area.png" width="180" height="60" style="margin-top:-21px; padding-right:10px;"></a></li>
+</ul>
+</div>
+</div>
+
+<!-- SOTTOMENU -->
+<div id="div_iconepiccole" class="has-sub" style="margin-bottom:20px;margin-top:5px;">
+<center>
+<table width="100%" border="0" cellpadding="0px" cellspacing="0px">
+  <tr style="background-color:#28292a;">
+    <th width="70px" scope="col"><a href="bacheca.php">
+            <img <?php if(strstr($_SERVER['REQUEST_URI'],"/area_riservata/bacheca.php")){?>
+                src="img/bacheca.png"
+                onmouseover="this.src='img/bacheca2.png';"
+        onmouseout="this.src='img/bacheca.png';"    
+                    <?php } else {?>src="img/bacheca2.png"
+                          onmouseover="this.src='img/bacheca.png';"
+        onmouseout="this.src='img/bacheca2.png';" 
+                        <?php } ?>
+      /></a></th>
+    <th width="70px" scope="col"><a href="#"><img src="img/organigramma2.png" 
+      onmouseover="this.src='img/organigramma.png';"
+      onmouseout="this.src='img/organigramma2.png';"/></a></th>
+
+   <!-- <th width="70px" scope="col"><a href="#"><img src="img/modifica2.png" 
+      onmouseover="this.src='img/modifica.png';"
+      onmouseout="this.src='img/modifica2.png';"/></a></th>
+    <th width="70px" scope="col"><a href="#"><img src="img/processi2.png" 
+      onmouseover="this.src='img/processi.png';"
+      onmouseout="this.src='img/processi2.png';"/></a></th>-->
+      <th width="70px" scope="col"><a href="#"><img src="img/timesheet2.png"  
+      onmouseover="this.src='img/timesheet.png';"
+      onmouseout="this.src='img/timesheet2.png';"/></a></th>
+      
+  <th width="70px" scope="col"><a href="riepilogo.php"><img <?php if($_SERVER['REQUEST_URI']=="/area_riservata/riepilogo.php"){?>
+                src="img/profilo.png"
+                onmouseover="this.src='img/profilo2.png';"
+        onmouseout="this.src='img/profilo.png';"    
+                    <?php } else {?>src="img/profilo2.png"
+                          onmouseover="this.src='img/profilo.png';"
+        onmouseout="this.src='img/profilo2.png';" 
+      <?php } ?>/></a></th>
+  <?php if(isset($_SESSION['is_admin'])&&$_SESSION['is_admin']==1) {?>
+      
+      <th width="70px" scope="col"><a href="amministrazione.php"><img <?php if(strstr($_SERVER['REQUEST_URI'],"/area_riservata/amministrazione.php")){?>
+                src="img/amministrazione.png"
+                onmouseover="this.src='img/amministrazione2.png';"
+        onmouseout="this.src='img/amministrazione.png';"    
+                    <?php } else {?>src="img/amministrazione2.png"
+                          onmouseover="this.src='img/amministrazione.png';"
+        onmouseout="this.src='img/amministrazione2.png';" 
+      <?php } ?>/></a></th>
+      <?php } ?>  
+  </tr>
+  </table>
+</div></center>

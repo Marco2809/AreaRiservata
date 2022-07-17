@@ -1,0 +1,204 @@
+<?php
+
+function sec_session_start() {
+        $session_name = 'sec_session_id'; // Imposta un nome di sessione
+        $secure = false; // Imposta il parametro a true se vuoi usare il protocollo 'https'.
+        $httponly = true; // Questo impedirà ad un javascript di essere in grado di accedere all'id di sessione.
+        ini_set('session.use_only_cookies', 1); // Forza la sessione ad utilizzare solo i cookie.
+        $cookieParams = session_get_cookie_params(); // Legge i parametri correnti relativi ai cookie.
+        session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], $cookieParams["domain"], $secure, $httponly); 
+        session_name($session_name); // Imposta il nome di sessione con quello prescelto all'inizio della funzione.
+        session_start(); // Avvia la sessione php.
+        session_regenerate_id(); // Rigenera la sessione e cancella quella creata in precedenza.
+}
+
+function login($username, $password, $mysqli) {
+    if($stmt = $mysqli->prepare("SELECT username, password, user_idd, is_admin FROM login WHERE username = ? LIMIT 1")) { 
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($db_user, $db_password, $db_user_id, $db_is_admin);
+        $stmt->fetch();
+        $password = hash('sha512', $password);
+        if($stmt->num_rows == 1) {
+            
+            if(checkbrute($db_user_id, $mysqli) == true) { 
+               return false;
+            } else {
+            if($db_password == $password) {
+                $user_browser = $_SERVER['HTTP_USER_AGENT'];
+
+                $user_id = preg_replace("/[^0-9]+/", "", $user_id);
+                $_SESSION['user_idd'] = $db_user_id; 
+                $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username); // ci proteggiamo da un attacco XSS
+                $_SESSION['username'] = $username;
+                $_SESSION['logged'] = 1;
+
+                if($db_is_admin == 1) {
+                    $_SESSION['is_admin'] = 1;
+                } else if($db_is_admin == 2) {
+                    $_SESSION['is_admin'] = 2;
+                } else {
+                    $_SESSION['is_admin'] = 0;
+                }
+                // $_SESSION['login_string'] = hash('sha512', $password.$user_browser);
+
+                $stmt = $mysqli->prepare("SELECT nome, cognome FROM anagrafica WHERE user_id = ? LIMIT 1");
+                $stmt->bind_param('i', $_SESSION['user_idd']);
+                $stmt->execute();
+                $stmt->store_result();
+                $stmt->bind_result($db_name, $db_surname);
+                $stmt->fetch();
+                
+                $_SESSION['name'] = $db_name;
+                $_SESSION['surname'] = $db_surname;
+                
+                $stmt = $mysqli->prepare("SELECT * FROM commesse WHERE id_responsabile = ? LIMIT 1");
+                $stmt->bind_param('i', $_SESSION['user_idd']);
+                $stmt->execute();
+                $stmt->store_result();
+                $stmt->bind_result($idCommessa, $idResp, $commessa, $cliente, $nome_comm);
+                $stmt->fetch();
+                
+                if($stmt->num_rows > 0){
+                    $_SESSION['responsabile'] = 1;
+                } else {
+                    $_SESSION['responsabile'] = 0;
+                }
+
+              return true;    
+           } else {
+              // Password incorretta.
+              // Registriamo il tentativo fallito nel database.
+              $now = time();
+              $mysqli->query("INSERT INTO login_attempts (user_id, time) VALUES ('$user_id', '$now')");
+              return false;
+           }
+        }
+        } else {
+           // L'utente inserito non esiste.
+           return false;
+        }
+    }
+}
+
+function checkbrute($user_id, $mysqli) {
+   // Recupero il timestamp
+   $now = time();
+   // Vengono analizzati tutti i tentativi di login a partire dalle ultime due ore.
+   $valid_attempts = $now - (2 * 60 * 60); 
+   if ($stmt = $mysqli->prepare("SELECT time FROM login_attempts WHERE user_id = ? AND time > '$valid_attempts'")) { 
+      $stmt->bind_param('i', $user_id); 
+      // Eseguo la query creata.
+      $stmt->execute();
+      $stmt->store_result();
+      // Verifico l'esistenza di più di 5 tentativi di login falliti.
+      if($stmt->num_rows > 5) {
+         return true;
+      } else {
+         return false;
+      }
+   }
+}
+
+function login_check($mysqli) {
+   // Verifica che tutte le variabili di sessione siano impostate correttamente
+   if(isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
+     $user_id = $_SESSION['user_id'];
+     $login_string = $_SESSION['login_string'];
+     $username = $_SESSION['username'];     
+     $user_browser = $_SERVER['HTTP_USER_AGENT']; // reperisce la stringa 'user-agent' dell'utente.
+     if ($stmt = $mysqli->prepare("SELECT password FROM User WHERE id = ? LIMIT 1")) { 
+        $stmt->bind_param('i', $user_id); // esegue il bind del parametro '$user_id'.
+        $stmt->execute(); // Esegue la query creata.
+        $stmt->store_result();
+ 
+        if($stmt->num_rows == 1) { // se l'utente esiste
+           $stmt->bind_result($password); // recupera le variabili dal risultato ottenuto.
+           $stmt->fetch();
+           $login_check = hash('sha512', $password.$user_browser);
+           if($login_check == $login_string) {
+              // Login eseguito!!!!
+              return true;
+           } else {
+              //  Login non eseguito
+              return false;
+           }
+        } else {
+            // Login non eseguito
+            return false;
+        }
+     } else {
+        // Login non eseguito
+        return false;
+     }
+   } else {
+     // Login non eseguito
+     return false;
+   }
+   
+}
+
+function filterActivities($idUser, $month, $year, $activity, $mysqli) {
+    $month = getMonthTwoDigits($month);
+    $activitiesOutput = array();
+    $currentActivity = array("", "", "");
+    $stmt = $mysqli->prepare("SELECT data, ore, timecard FROM attivita "
+            . "WHERE id_utente = ? AND SUBSTRING(data, 4, 2) = ? AND SUBSTRING(data, 7, 4) = ? "
+            . "AND tipo = ?");
+    $stmt->bind_param('isss', $idUser, $month, $year, $activity);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($db_data, $db_ore, $db_timecard);
+    while($stmt->fetch()) {
+        $currentActivity[0] = getDayFromDate($db_data);
+        $currentActivity[1] = $db_ore;
+        $currentActivity[2] = $db_timecard;
+        array_push($activitiesOutput, $currentActivity);
+    }
+    return $activitiesOutput;
+}
+
+function consoleLog($message) {
+    echo '<script>console.log("' . $message . '");</script>';
+}
+
+function getTimestamp($day, $month, $year) {
+    $tempDate = strptime($day . '-' . $month . '-' . $year, '%d-%m-%Y');
+    return mktime(0, 0, 0, $tempDate['tm_mon']+1, $tempDate['tm_mday'], $tempDate['tm_year']+1900);
+}
+
+function getDayFromDate($date) {
+    $day = substr($date, 0, 2);
+    if(substr($day, 0, 1) == '0') {
+        $day = substr($day, 1, 1);
+    }
+    return $day;
+}
+
+function getPosDayFromDate($timestamp) {
+    return date("N", $timestamp);
+}
+
+function getColumnFromIndex($index) {
+    return PHPExcel_Cell::stringFromColumnIndex($index + 6);
+}
+
+function getJobNameFromId($jobId, $mysqli) {
+    $stmt = $mysqli->prepare("SELECT cliente FROM commesse WHERE id_commessa = ? LIMIT 1");
+    $stmt->bind_param('i', $jobId);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($jobName);
+    $stmt->fetch();
+    return $jobName;
+}
+
+function getMonthTwoDigits($month) {
+    if($month < 10) {
+        $month = '0' . $month;
+    }
+    return $month;
+}
+
+?>

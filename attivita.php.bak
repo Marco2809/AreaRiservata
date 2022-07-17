@@ -1,0 +1,147 @@
+<?php 
+if(!isset($_SESSION['responsabile'])||$_SESSION['responsabile']==0){
+    echo 'Non dispone dei provilegi necessari per visualizzare questa pagina.';
+    
+} else { ?>
+<div id="contenitore1" class="fluid ">
+ <table align="center" width="90%" height="auto" padding="0" border="1" class="cal" style="margin-top:0px;margin-left:px;">
+    <tr>
+  <col class="weekday" span="5">
+  <col class="weekend">
+  <col class="weekend">
+  <thead>
+      <tr><td colspan="8" style="color:#fff; font-size: 35px; height: 100%; background-color: #960a19;">
+              ATTIVITA' DA VALIDARE</td></tr></table>
+              <?php 
+              
+              $query_attivita="SELECT cliente, nome_commessa from commesse WHERE id_responsabile = ".$_SESSION['user_idd'];
+              $result_attivita = mysql_query($query_attivita, $conn->db);
+              while ($row_com = mysql_fetch_array($result_attivita, MYSQL_ASSOC)){
+                  $commessa= $row_com['nome_commessa'];
+     
+             
+              $query_attivita="SELECT * from attivita,anagrafica WHERE anagrafica.user_id = attivita.id_utente AND attivita.stato='Non Validato' AND attivita.commessa='".$commessa."' ORDER BY giorno DESC, mese DESC, anno DESC";
+              $result_attivita = mysql_query($query_attivita, $conn->db);
+              echo mysql_error();
+              $control_attivita=1;
+                while ($row_attivita = mysql_fetch_array($result_attivita, MYSQL_ASSOC)) {?>
+     <form action="" method="post">
+              <table align="center" width="90%" height="auto" border="1" padding="0" class="cal" style="margin-top:-32px; margin-left:px;border-bottom: 1px solid #000;">
+                   <?php  if($control_attivita==1){
+                        ?>
+      <tr>
+      <th><center><span style="color:#8ec25a;">Nome Cognome</span></center></th>
+      <th><center><span style="color:#8ec25a;">Data</span></center></th>
+      <th><center><span style="color:#8ec25a;">Ora Inizio</span></center></th>
+      <th><center><span style="color:#8ec25a;">Ora Fine</span></center></th>
+      <th><center><span style="color:#8ec25a;">Durata</span></center></th>
+      <th><center><span style="color:#8ec25a;">Descrizione</span></center></th>
+      <th><center><span style="color:#8ec25a;">Commessa</span></center></th>
+      <th><center><span style="color:#8ec25a;">Tipo</span></center></th>
+      <th><center><span style="color:#8ec25a;">Convalida</span></center></th>
+      <th><center><span style="color:#8ec25a;">Rifiuta</span></center></th>
+      </tr>
+          <?php
+                    }
+                    $control_attivita++;
+      
+                    ?>
+     <tr>
+         <td style="background-color: #fff; width: 120px;"><?php echo $row_attivita['nome'].' '.$row_attivita['cognome']?></td>
+        
+         <td style="background-color: #fff;"><?php echo $row_attivita['giorno'].'/'.$row_attivita['mese'].'/'.$row_attivita['anno']?></td>
+         
+         <td style="background-color: #fff; width: 135px;">
+                    <select onchange="javascript:durata_tot(<?php echo $control_attivita?>);" id="ora_inizio<?php echo $control_attivita?>" name="ora_inizio">
+                     
+                        <?php for($i=8;$i<21;$i++){
+                            if($i<10) $t="0".$i;
+                            else $t= $i;
+                           ?>
+                        <option <?php if(substr($row_attivita['ora_inizio'],0,2)==$t){ ?> selected="selected" <?php }?> value="<?php echo $t?>"><?php echo $t?></option>
+                        <?php
+                        }?>
+            </select>
+            <select name="minuti_inizio" onchange="javascript:durata_tot(<?php echo $control_attivita?>);" id="minuti_inizio<?php echo $control_attivita?>">
+           
+                        <?php for($i=0;$i<60;$i++){
+                            if($i<10) $t="0".$i;
+                            else $t= $i;
+                           ?>
+                        <option <?php if(substr($row_attivita['ora_inizio'],3,2)==$t){ ?> selected="selected" <?php }?> value="<?php echo $t?>"><?php echo $t?></option>
+                        <?php
+                        }?>
+            </select>
+        <td style="background-color: #fff;width: 135px;">
+            <select onchange="javascript:durata_tot(<?php echo $control_attivita?>);" name="ora_fine" id="ora_fine<?php echo $control_attivita?>">
+                       
+                        <?php for($i=8;$i<21;$i++){
+                            if($i<10) $t="0".$i;
+                            else $t= $i;
+                           ?>
+                        <option <?php if(substr($row_attivita['ora_fine'],0,2)==$t){ ?> selected="selected" <?php }?> value="<?php echo $t?>"><?php echo $t?></option>
+                        <?php
+                        }?>
+            </select>
+            <select onchange="javascript:durata_tot(<?php echo $control_attivita?>);" name="minuti_fine" id="minuti_fine<?php echo $control_attivita?>">
+            
+                        <?php for($i=0;$i<60;$i++){
+                            if($i<10) $t="0".$i;
+                            else $t= $i;
+                           ?>
+                        <option <?php if(substr($row_attivita['ora_fine'],3,2)==$t){ ?> selected="selected" <?php }?> value="<?php echo $t?>"><?php echo $t?></option>
+                        <?php
+                        }?>
+            </select></td>
+            <td style="background-color: #fff;"><input type="text" id="durata<?php echo $control_attivita?>" name="durata" value="<?php echo $row_attivita['ore_lavorate'];?>" style="width: 40px;"></td>
+            <td style="background-color: #fff;"><textarea name="descrizione_attivita" ><?php echo $row_attivita['descrizione'];?></textarea>
+                    </td>
+                            <td style="background-color: #fff;"><select name="commessa">
+                                    <?php $query="SELECT * from commesse where id_responsabile=".$_SESSION['user_idd'];
+                                            $result=  mysql_query($query);
+                                            
+                                            while($row_commesse= mysql_fetch_array($result)){
+                                            ?>
+                                    <option value="<?php echo $row_commesse['nome_commessa']?>" 
+                                        <?php if($row_attivita['commessa']==$row_commesse['nome_commessa']){ ?>selected="selected"<?php } ?> ><?php echo $row_commesse['nome_commessa']?></option>
+                                    
+                                            <?php } ?>
+                        </select></td>
+        <td style="background-color: #fff;"><select name="tipo">
+                                    <option <?php if($row_attivita['tipo']=="P") {?>selected="selected"<?php }?> value="P">Presente</option>
+                                    <option <?php if($row_attivita['tipo']=="PE") {?>selected="selected"<?php }?>value="PE">Permessi</option>
+                                    <option <?php if($row_attivita['tipo']=="F") {?>selected="selected"<?php }?>value="F">Ferie</option>
+                                    <option <?php if($row_attivita['tipo']=="FE") {?>selected="selected"<?php }?>value="FE">Festività</option>
+                                    <option <?php if($row_attivita['tipo']=="M") {?>selected="selected"<?php }?>value="M">Maternità</option>
+                        </select></td>
+        <td style="background-color: #fff;padding: 0;padding-top: 10px;">
+            <input type="image" name="convalida" style="width: 85px;padding: 0; margin:0;" src="img/convalida.png"
+      onmouseover="this.src='img/convalida2.png';"
+      onmouseout="this.src='img/convalida.png';"/>
+        </td>
+           <td style="background-color: #fff;padding: 0;padding-top: 10px;">
+            <img class="rifiuta" id="<?php echo $row_attivita['id_attivita']?>" name="prova" style="width: 85px; padding: 0; margin:0;" src="img/rifiuta.png"
+      onmouseover="this.src='img/rifiuta2.png';"
+      onmouseout="this.src='img/rifiuta.png';"/>
+            <input type="hidden" name="id_attivita" value="<?php echo $row_attivita['id_attivita']?>">
+           </td>
+     </tr><tr id="motivo<?php echo $row_attivita['id_attivita']?>" style="display:none;" ><td colspan="10">Motivo: <br><textarea name="motivo_rifiuto" cols="2" rows="4" style="width: 45%;"></textarea><br><input style="background-color: #960a19;color: #fff;" type="submit" name="ok_rifiuto" value="Rifiuta"></td></tr></table></form><?php
+}
+}
+}
+              ?>
+    <script src="jquery-3.0.0.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+           $(".rifiuta*").click(function() {
+                       var id_attivita = $(this).attr("id"); 
+                       if($('#motivo'+id_attivita).css("display")=="none") {
+                          
+                       $('#motivo'+id_attivita).css("display","");
+                   } else {$('#motivo'+id_attivita).css("display","none");
+         
+        }
+                      
+           });
+        });
+                </script>

@@ -1,0 +1,93 @@
+<?php 
+$num=0;
+                    if(isset($_GET['id']) && $_GET['id']=="dip"){
+                        ?>
+                <center>
+                <form method="post" action="">
+                 <select name="lettera"  >
+                     <?php
+                     for($i=1; $i<=26; $i++)
+                     {
+                         if($i==1) $l="a";
+                         if($i==2) $l="b";
+                         if($i==3) $l="c";
+                         if($i==4) $l="d";
+                         if($i==5) $l="e";
+                         if($i==6) $l="f";
+                         if($i==7) $l="g";
+                         if($i==8) $l="h";
+                         if($i==9) $l="i";
+                         if($i==10) $l="j";
+                         if($i==11) $l="k";
+                         if($i==12) $l="l";
+                         if($i==13) $l="m";
+                         if($i==14) $l="n";
+                         if($i==15) $l="o";
+                         if($i==16) $l="p";
+                         if($i==17) $l="q";
+                         if($i==18) $l="r";
+                         if($i==19) $l="s";
+                         if($i==20) $l="t";
+                         if($i==21) $l="u";
+                         if($i==22) $l="v";
+                         if($i==23) $l="w";
+                         if($i==24) $l="x";
+                         if($i==25) $l="y";
+                         if($i==26) $l="z";
+                        
+                         ?>
+                     
+   <option value="<?php echo $l;?>" <?php if(isset($_POST['lettera'])&& $_POST['lettera']==$l) {?> selected="selected"<?php } ?>><?php echo $l ?></option>
+      <?php 
+                     }
+                     ?>
+  </select>
+                
+                    <input type="submit" value="Cerca">
+            </form>
+                <form action="" method="post"><input type="submit" name="visualizza_dip" value="Visualizza Tutti"></form></center>
+                <br>
+            <?php
+                    if(!isset($_POST['lettera'])||isset($_POST['visualizza_dip'])&&$_POST['visualizza_dip']=="Visualizza Tutti")
+                        
+        { 
+                        $query_time = "select user_id,nome, cognome, luogo_nascita,data_nascita FROM anagrafica ORDER BY cognome, nome";
+                        $result_time = mysql_query($query_time, $conn->db);
+        } else 
+        {
+                         $query_time = "select user_id,nome, cognome, luogo_nascita,data_nascita FROM anagrafica WHERE cognome LIKE '".$_POST['lettera']."%' ORDER BY cognome, nome";
+                        $result_time = mysql_query($query_time, $conn->db);
+            
+            
+        }
+if (!$result_time) {
+    die('Errore di inserimento dati: ' . mysql_error());
+} else {?>
+   
+                          <?php 
+                          while ($row = mysql_fetch_array($result_time)) {
+
+        $user_id = $row['user_id'];
+        $nome = $row['nome'];
+        $cognome = $row['cognome'];
+        $data_nascita = $row['data_nascita'];
+        $luogo_nascita = $row['luogo_nascita'];
+   
+        $data=explode("-",$data_nascita);
+        $num++;
+        ?>
+                <table>
+                          <tr >  
+                              <td width="80%"><b><?php echo $num.". &nbsp;&nbsp;&nbsp;"?><a href="riepilogo.php?id=<?php echo $user_id?>"><?php echo $cognome . " " . $nome." - ".$data[2]."/".$data[1]."/".$data[0]." - ".$luogo_nascita; ?></a>
+                         </b></td>
+                         <td width="20%"><a target="blank" href="/form/tcpdf/examples/PDF_create.php?id=<?php echo $user_id?>"><img width="30px" src="img/pdf.png"></a></td>
+                </tr></table>
+                    </tr>  </table>
+<?php
+                    }
+                ?>
+               
+        <?php
+    }
+                    }
+                    ?>

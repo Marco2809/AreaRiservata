@@ -1,0 +1,139 @@
+<?php 
+$num=0;
+                    if(isset($_GET['id']) && $_GET['id']=="time"){
+                        ?>
+                <center>
+                <form method="post" action="">
+                 <select name="mese"  >
+                     <?php
+                     for($i=1; $i<=12; $i++)
+                     {
+                         ?>
+                     
+   <option value="<?php echo $i;?>" <?php if(isset($_POST['mese'])&&$_POST['mese']==$i) {?> selected="selected"<?php } ?>><?php echo $i ?></option>
+      <?php 
+                     }
+                     ?>
+  </select>
+                 <select name="anno"  >
+                     <?php
+                     for($i=date("Y"); $i>=2010; $i--)
+                     {
+                         ?>
+                     
+   <option value="<?php echo $i;?>" <?php if(isset($_POST['anno'])&&$_POST['anno']==$i) {?> selected="selected"<?php } ?>><?php echo $i ?></option>
+      <?php 
+                     }
+                     ?>
+  </select>
+                    <input type="submit" value="Cerca">
+            </form>
+                <form action="" method="post"><input type="submit" name="visualizza" value="Visualizza Tutti"></form></center>
+                <br>
+            <?php
+                    if(!isset($_POST['mese'])&&!isset($_POST['anno'])||isset($_POST['visualizza'])&&$_POST['visualizza']=="Visualizza Tutti")
+                        
+        { 
+                          $month=date('m');
+                          $year=date('Y');
+                          if($month != 10 || $month != 11 || $month != 12)
+                          {
+                             $month = substr($month,1,2);   
+                  
+                          }
+                          
+                        $query_time = "select timesheet.id_user,timesheet.id_mese_time,anagrafica.referente,anagrafica.user_id, timesheet.id_anno_time, timesheet.id_time,timesheet.tipo_giorni, timesheet.ore_perm from timesheet, anagrafica WHERE timesheet.id_user = anagrafica.user_id AND anagrafica.referente =".$cod_anagr." AND timesheet.convalidato != 1 AND ((timesheet.id_mese_time < ".$month."  AND timesheet.id_anno_time =".$year." ) OR (timesheet.id_mese_time = ".$month."  AND timesheet.id_anno_time !=".$year.")OR (timesheet.id_mese_time != ".$month."  AND timesheet.id_anno_time !=".$year.")) ORDER BY timesheet.id_anno_time, timesheet.id_mese_time";  
+                                
+                        $result_time = mysql_query($query_time, $conn->db);
+                  
+        } else if($_POST['mese']<substr(date('m'),1,2)&&$_POST['anno']<=date('Y'))
+        {
+                        $query_time = "select id_user,id_mese_time, id_anno_time, id_time,tipo_giorni, ore_perm from timesheet WHERE convalidato != 1 AND id_mese_time = ". $_POST['mese']." AND id_anno_time = ".$_POST['anno']." ORDER BY id_anno_time, id_mese_time";
+                        $result_time = mysql_query($query_time, $conn->db);
+            
+            
+        } else
+        {
+             $query_time = "select timesheet.id_user,timesheet.id_mese_time,timesheet.referente,anagrafica.user_idd, timesheet.id_anno_time, timesheet.id_time,timesheet.tipo_giorni, timesheet.ore_perm from timesheet, anagrafica ON timesheet.user_id = anagrafica.user_idd  AND convalidato != 1 AND anagrafica.user_idd =".$cod_anagr." AND timesheet.id_mese_time = 0 AND timesheet.id_anno_time = 0 ORDER BY timesheet.id_anno_time, timesheet.id_mese_time";
+             $result_time = mysql_query($query_time, $conn->db);
+            
+        }
+if (!$result_time) {
+    die('Errore di inserimento dati: ' . mysql_error());
+} else {?>
+   
+                          <?php 
+                          while ($row = mysql_fetch_array($result_time)) {
+                        
+        $id_user = $row['id_user'];
+        $id_mese_time = $row['id_mese_time'];
+        $id_anno_time = $row['id_anno_time'];
+        $id_time = $row['id_time'];
+        $ore_perm = $row['ore_perm'];
+        $tipo_giorni = $row['tipo_giorni'];
+        
+        $num++;
+      
+            $sql3_anagrafica = "SELECT 
+							nome, 
+							cognome, 
+							codice_fiscale 
+                                                        FROM anagrafica WHERE user_id=" . $id_user;
+
+
+    $result3_anagrafica = mysql_query($sql3_anagrafica, $conn->db);
+
+    if (!$result3_anagrafica) {
+        die('Errore di inserimento dati 3: ' . mysql_error());
+    } else {
+        ?>
+                          
+                          <?php
+       while( $row = mysql_fetch_array($result3_anagrafica, MYSQL_ASSOC)) {
+            $nome = $row['nome'];
+            $cognome = $row['cognome'];
+            $codice_fiscale = $row['codice_fiscale'];
+   
+            ?>
+             
+                <table width="100%">
+                          <tr >  
+                     <td ><b><?php echo $num.". &nbsp;&nbsp;&nbsp;".$nome . " " . $cognome." - ".$id_mese_time ."/".$id_anno_time." - ".$codice_fiscale; ?>
+                         </b></td>
+                    </tr>  </table>
+                     <?php
+                         }
+    }
+                    ?>
+                        
+                <?php
+ 
+
+$tipo_giorni = @explode('-', $tipo_giorni);
+if(!checkdate($id_mese_time,28+1,$id_anno_time)) { $num_giorni = 28;}
+			else if(!checkdate($id_mese_time,29+1,$id_anno_time)) { $num_giorni = 29;}
+			else if(!checkdate($id_mese_time,30+1,$id_anno_time)) { $num_giorni = 30;}
+			else if(!checkdate($id_mese_time,31+1,$id_anno_time)) { $num_giorni = 31;}
+	 ?>
+                <table width="100%" border="1" padding="1">
+            <tr>
+                <?php
+        for($i=1; $i<=$num_giorni; $i++){
+            ?>
+                <td><form method="post" action=""><center><b><?php echo $i;?></b><br><input type="text" name="tipo<?php echo $i?>" style="width: 20px;" value="<?php echo $tipo_giorni[$i-1];?>"></center></td>
+            
+                    <?php
+                    }
+                    ?>
+                <td> <input type="hidden" name="validate" value="<?php echo $id_time?>"> <input type="image" width="30px" src="img/check.png"></form></td>
+                </tr></table>
+                
+                <?php
+       
+                    }
+                ?>
+               
+        <?php
+    }
+                    }
+                    ?>
