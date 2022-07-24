@@ -103,7 +103,7 @@ $_SESSION['cognome'] = $cognome;
          }
     }
 
-    public function updateAnagrafica($user_id,$nome,$cognome,$luogo_nascita,$data_nascita,$nazionalita,$phone,$citta_residenza,$indirizzo_residenza,$citta_domicilio,$indirizzo_domicilio,$codice_fiscale,$user_id){
+    public function updateAnagrafica($user_id,$nome,$cognome,$luogo_nascita,$data_nascita,$nazionalita,$phone,$citta_residenza,$indirizzo_residenza,$citta_domicilio,$indirizzo_domicilio,$codice_fiscale){
 
          $sql="UPDATE anagrafica SET nome= '".$this->db->escape_string($nome)."',cognome = '".$this->db->escape_string($cognome)."',luogo_nascita = '".$this->db->escape_string($luogo_nascita)."',data_nascita = '".$data_nascita."',nazionalita = '".$this->db->escape_string($nazionalita)."',phone = '".$phone."',citta_residenza = '".$this->db->escape_string($citta_residenza)."',indirizzo_residenza = '".$this->db->escape_string($indirizzo_residenza)."',citta_domicilio = '".$this->db->escape_string($citta_domicilio)."',indirizzo_domicilio = '".$this->db->escape_string($indirizzo_domicilio)."',codice_fiscale = '".$codice_fiscale."' WHERE user_id =".$user_id;
 
