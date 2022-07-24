@@ -2,6 +2,9 @@
 
 session_start();
 
+error_reporting(E_ALL);
+ini_set("display_errors",1);
+
 require_once('class/dbconn.php');
 require_once('class/info_hr.class.php');
 require_once('class/attivita.class.php');
